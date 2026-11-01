@@ -19,7 +19,7 @@ go build -o ~/.local/bin/script-launcher ./cmd/script-launcher
 
 ## Add and run a script
 
-1. Press **Add script**. The picker opens in the folder of the last script you added.
+1. Press **Añadir script**. The picker opens in the folder of the last script you added.
 2. Choose a file. It is saved and selected.
 3. Press **▶** on its row. The output appears on the right and follows new lines until you
    scroll up.
@@ -40,8 +40,14 @@ A file that matches none of these is refused when you add it.
 
 ## Where the list is kept
 
-In `$XDG_CONFIG_HOME/script-launcher/scripts.json`, which is
-`~/.config/script-launcher/scripts.json` on most systems. `-config <file>` uses another file.
+In `$XDG_CONFIG_HOME/script-launcher/`, which is `~/.config/script-launcher/` on most systems:
 
-If the file is not valid JSON, the launcher refuses to start and says where it is, instead of
-overwriting your list. Fix the file or delete it.
+| File | Holds |
+|---|---|
+| `scripts.json` | The saved scripts. |
+| `settings.json` | The profile used last. |
+
+`-config-dir <folder>` uses another folder.
+
+If either file is not valid JSON, the launcher refuses to start and says where it is, instead of
+overwriting it. Fix the file or delete it.

@@ -1,46 +1,34 @@
 package views
 
 import (
-	"errors"
-	"path/filepath"
+	"fmt"
 	"time"
 
+	"github.com/akrck02/go-renderer/draw2d"
 	ui "github.com/akrck02/go-ui"
 
 	"github.com/Itros97/script-launcher/internal/data"
-	"github.com/Itros97/script-launcher/internal/domain"
-	"github.com/Itros97/script-launcher/internal/services"
+	"github.com/Itros97/script-launcher/internal/views/components"
+	"github.com/Itros97/script-launcher/internal/views/profiles"
+	"github.com/Itros97/script-launcher/internal/views/session"
 )
 
-// noticeDuration is how long a toast stays on screen.
-const noticeDuration = 4 * time.Second
-
-// AppView is the whole window: it holds the UI state and turns clicks into repository and run calls.
+// AppView is the whole window: the toolbar with the profile selector, the active profile's layout,
+// the status bar, the file picker and the notices.
 type AppView struct {
-	repository data.ScriptRepository
-	service    *services.RunService
-	now        func() time.Time
-	home       string
-	scripts    []domain.Script
-	selectedID string
-	picking    bool
-	notice     string
-	warning    bool
-	noticeEnd  time.Time
+	session  *session.Session
+	profiles profiles.Registry
+	settings data.SettingsRepository
+	active   int
 }
 
-// NewAppView loads the saved scripts and builds the view; home is shown as ~ in paths. A corrupt list is an
-// error so it is never overwritten.
-func NewAppView(repository data.ScriptRepository, service *services.RunService, now func() time.Time, home string) (*AppView, error) {
-	scripts, err := repository.List()
+// NewAppView opens on the profile saved last time; a corrupt settings file is an error so it is never overwritten.
+func NewAppView(current *session.Session, registry profiles.Registry, settings data.SettingsRepository) (*AppView, error) {
+	saved, err := settings.Load()
 	if err != nil {
 		return nil, err
 	}
-	app := &AppView{repository: repository, service: service, now: now, home: home, scripts: scripts}
-	if len(scripts) > 0 {
-		app.selectedID = scripts[0].ID
-	}
-	return app, nil
+	return &AppView{session: current, profiles: registry, settings: settings, active: registry.IndexOf(saved.Profile)}, nil
 }
 
 // Draw describes the window for this frame, top to bottom.
@@ -49,11 +37,7 @@ func (app *AppView) Draw(context *ui.Context) {
 	context.Box(ui.Layout{Direction: ui.Vertical, Width: ui.Grow(), Height: ui.Grow()}, func() {
 		app.drawToolbar(context)
 		context.Separator()
-		context.Box(ui.Layout{Width: ui.Grow(), Height: ui.Grow()}, func() {
-			app.drawScriptList(context)
-			context.Separator()
-			app.drawOutput(context)
-		})
+		app.profiles.Profiles()[app.active].Draw(context, app.session)
 		context.Separator()
 		app.drawStatusBar(context)
 	})
@@ -61,84 +45,73 @@ func (app *AppView) Draw(context *ui.Context) {
 	app.drawNotice(context)
 }
 
-// ---- actions ----
-
-// addScript validates and saves a picked file, then selects it.
-func (app *AppView) addScript(path string) {
-	if _, err := app.service.Resolve(path); err != nil {
-		app.notify(err.Error(), true)
-		return
-	}
-	script, err := app.repository.Add(path)
-	if errors.Is(err, data.ErrDuplicateScript) {
-		app.selectedID = domain.ScriptID(path)
-		app.notify("That script is already in the list", false)
-		return
-	}
-	if err != nil {
-		app.notify(err.Error(), true)
-		return
-	}
-	app.scripts = append(app.scripts, script)
-	app.selectedID = script.ID
-	app.notify("Saved "+script.Name, false)
-}
-
-// removeScript stops and forgets a script.
-func (app *AppView) removeScript(script domain.Script) {
-	if err := app.service.Stop(script.ID); err != nil {
-		app.notify(err.Error(), true)
-		return
-	}
-	if err := app.repository.Remove(script.ID); err != nil {
-		app.notify(err.Error(), true)
-		return
-	}
-	scripts, err := app.repository.List()
-	if err != nil {
-		app.notify(err.Error(), true)
-		return
-	}
-	app.scripts = scripts
-	if app.selectedID == script.ID {
-		app.selectedID = ""
-	}
-}
-
-// runScript starts a script and selects it so its output is shown.
-func (app *AppView) runScript(script domain.Script) {
-	app.selectedID = script.ID
-	if _, err := app.service.Start(script); err != nil {
-		app.notify(err.Error(), true)
-	}
-}
-
-// stopScript stops a running script.
-func (app *AppView) stopScript(script domain.Script) {
-	if err := app.service.Stop(script.ID); err != nil {
-		app.notify(err.Error(), true)
-	}
-}
-
-// ---- helpers ----
-
-func (app *AppView) notify(text string, warning bool) {
-	app.notice, app.warning, app.noticeEnd = text, warning, app.now().Add(noticeDuration)
-}
-
-func (app *AppView) selected() (domain.Script, bool) {
-	for _, script := range app.scripts {
-		if script.ID == app.selectedID {
-			return script, true
+// drawToolbar is the top strip: the app's name, the profile selector and the button that adds a script.
+func (app *AppView) drawToolbar(context *ui.Context) {
+	components.Bar(context, 48, func() {
+		context.IconSized("terminal", 18, context.Theme.Primary)
+		context.Text("Script Launcher", ui.TextStyle{Size: 15, Weight: draw2d.Bold})
+		context.Box(ui.Layout{Width: ui.Fixed(12)}, nil)
+		context.Box(ui.Layout{Width: ui.Fixed(160)}, func() {
+			chosen := app.active
+			if context.Select("Perfil", &chosen, app.profiles.Names()) {
+				app.switchProfile(chosen)
+			}
+		})
+		context.Tooltip("Perfil: la distribución de la ventana")
+		context.Spacer()
+		if context.PrimaryIconButton("plus", "Añadir script") {
+			app.session.OpenPicker()
 		}
-	}
-	return domain.Script{}, false
+		context.Tooltip("Elige un script del disco y guárdalo en la lista")
+	})
 }
 
-// pickerStart opens the file picker where the last saved script lives.
-func (app *AppView) pickerStart() string {
-	if len(app.scripts) == 0 {
-		return ""
+// switchProfile shows another layout and remembers it for the next time the app opens.
+func (app *AppView) switchProfile(index int) {
+	if leaving, ok := app.profiles.Profiles()[app.active].(profiles.Leaver); ok && index != app.active {
+		leaving.Leave(app.session)
 	}
-	return filepath.Dir(app.scripts[len(app.scripts)-1].Path)
+	app.active = index
+	app.session.ClosePicker()
+	profile := app.profiles.Profiles()[index].ID()
+	if err := app.settings.Update(func(settings *data.Settings) { settings.Profile = profile }); err != nil {
+		app.session.Warn(err)
+	}
+}
+
+// drawStatusBar is the bottom strip: how many scripts are saved and how many are running.
+func (app *AppView) drawStatusBar(context *ui.Context) {
+	running := app.session.RunningCount()
+	components.Bar(context, 26, func() {
+		context.Caption(fmt.Sprintf("%d guardados", len(app.session.Scripts())))
+		if running > 0 {
+			context.Caption(fmt.Sprintf("· %d en marcha", running))
+			context.RequestFrame(time.Second) // keeps the elapsed time moving
+		}
+	})
+}
+
+// drawPicker shows go-ui's file picker while the user is adding a script.
+func (app *AppView) drawPicker(context *ui.Context) {
+	if !app.session.Picking() {
+		return
+	}
+	path, closed := context.FilePicker(ui.FilePickerOptions{Title: "Añadir un script", Start: app.session.PickerStart()})
+	if !closed {
+		return
+	}
+	app.session.ClosePicker()
+	if path != "" {
+		app.session.Add(path)
+	}
+}
+
+// drawNotice shows the current notice as a toast until it expires.
+func (app *AppView) drawNotice(context *ui.Context) {
+	notice, shown := app.session.CurrentNotice()
+	if !shown {
+		return
+	}
+	context.Toast(notice.Text, notice.Warning)
+	context.RequestFrame(notice.Ends.Sub(app.session.Now()))
 }

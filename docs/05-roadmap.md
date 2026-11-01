@@ -4,6 +4,10 @@
 
 Ideas, roughly in order. None of them is promised.
 
+- **Calibre3D steps**: buttons for `plano`, `centrar` and `medir <name>`, with the measurements
+  (height, length, width) and result pictures shown in the window.
+- **Calibre3D camera**: the depth image beside the colour one, guides drawn over the live view (the
+  cross and the circle), and a thumbnail of the last photo.
 - **Arguments per script**: a field on each script for arguments, saved with it.
 - **Environment variables** per script, read from an ignored `.env` file next to it.
 - **Rename and reorder** the saved scripts, and group them in folders.

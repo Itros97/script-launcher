@@ -7,23 +7,48 @@ ones below it, and `cmd/script-launcher/main.go` is the only place that builds t
 each one what it needs.
 
 ```
-views     →  services  →  domain
-   └────────→  data    →  domain
+views ─→ profiles ─→ components ─→ session ─→ services ─→ domain
+                                       └────→ data ─────→ domain
 ```
 
 | Layer | Files | What it holds |
 |---|---|---|
-| `domain` | `script.go`, `runner.go`, `output.go` | Plain data and pure logic: a saved script, the runners and the registry that picks one, the output buffer. No disk, no processes. |
-| `data` | `script_repository.go`, `json_script_repository.go` | The `ScriptRepository` interface and its JSON implementation. The disk sits behind a `FileStore`, so tests use a map. |
-| `services` | `run_service.go`, `run.go` | Starting, watching and stopping processes. One `Run` per execution, safe to read from the UI while its goroutines write. |
-| `views` | `app_view.go`, `chrome_view.go`, `script_list_view.go`, `output_view.go`, `format.go` | The window, drawn with Go UI. `AppView` holds the UI state and turns clicks into repository and service calls. |
+| `domain` | `script.go`, `runner.go`, `output.go`, `profile.go` | Plain data and pure logic: a saved script, the runners and the registry that picks one, the output buffer, the profile IDs. No disk, no processes. |
+| `data` | `script_repository.go`, `settings_repository.go`, their `json_*` implementations, `json_file.go` | The repositories and their JSON files. The disk sits behind a `FileStore`, so tests use a map. |
+| `services` | `run_service.go`, `run.go`, `python_env_service.go`, `capture_service.go`, `preview_service.go` | Starting, watching and stopping processes; one `Run` per execution, safe to read from the UI while its goroutines write. Preparing and checking a Python `.venv`, saving photos, and the live camera view, with the scripts embedded in `capture/`. |
+| `views/session` | `session.go`, `actions.go` | What every profile shares: the scripts, the selection, the notices, the file picker, and the actions (add, remove, run, stop). |
+| `views/components` | `script_list.go`, `output_panel.go`, `bar.go`, … | The pieces layouts are built from. Each draws from a session and calls its actions. |
+| `views/profiles` | `profile.go`, `default.go`, `calibre3d*.go` | The layouts, and the registry the selector offers. Calibre3D is split by card: project, environment, camera. |
+| `views` | `app_view.go` | The window: toolbar with the profile selector, the active profile, status bar, picker, notices. |
 
 ## A frame
 
-Go UI is immediate mode: there are no widget objects. Each frame `AppView.Draw` reads the list and
-each script's latest `Run` snapshot and describes the window again. A run's goroutines call
-`window.Wake()` after every line, so the window draws only when something changed and sleeps
+Go UI is immediate mode: there are no widget objects. Each frame `AppView.Draw` draws the toolbar,
+then calls the active profile's `Draw` with the session, then the status bar. A run's goroutines
+call `window.Wake()` after every line, so the window draws only when something changed and sleeps
 otherwise.
+
+## Adding a profile
+
+A profile is anything that implements `profiles.Profile`:
+
+```go
+type Profile interface {
+	ID() domain.ProfileID
+	Name() string
+	Draw(context *ui.Context, current *session.Session)
+}
+```
+
+1. Add its ID to `internal/domain/profile.go`.
+2. Write the layout in a new file in `internal/views/profiles/`, building it from `components`
+   (`ScriptList`, `ScriptRow`, `RunButtons`, `OutputPanel`, `OutputLines`, `Bar`) and plain Go UI.
+3. Add it to `DefaultRegistry` in `profile.go`. The selector shows profiles in that order; the
+   first one is used when the saved profile is unknown.
+
+A profile that needs state of its own (a chosen tab, a typed value) keeps it in its own struct
+fields and is registered as a pointer. One that needs services gets them in a constructor, called
+from `main.go`, as `NewCalibre3D(env, settings)` does.
 
 ## Adding a kind of script
 
@@ -46,11 +71,6 @@ InterpreterRunner{Program: "ruby", Extensions: []string{".rb"}},
 
 Then add a case to `TestResolvesInterpreterByExtension`.
 
-## Adding a panel
-
-Each panel is an `AppView` method in its own file (`drawScriptList`, `drawOutput`…). A new panel
-is a new file with a `draw…` method, called from `Draw` in `app_view.go`.
-
 ## Tests
 
 ```bash
@@ -58,6 +78,8 @@ go test -race ./...
 ```
 
 - `domain` and `data` are tested with plain values and an in-memory `FileStore`.
-- `services` runs the small scripts in `internal/services/testdata`.
-- `views` opens the window headless with Go UI's `uitest`, clicks the real buttons by name, and
-  checks what the window shows.
+- `services` runs the small scripts in `internal/services/testdata`, creates real `.venv`s, and
+  saves photos through a stand-in `pyrealsense2` (`testdata/fake_realsense`) that returns a solid
+  frame, checking the PNG it writes.
+- `views` opens the window headless with Go UI's `uitest`, clicks the real buttons and the profile
+  selector by name, and checks what the window shows.

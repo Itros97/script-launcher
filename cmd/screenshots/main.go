@@ -17,6 +17,8 @@ import (
 	"github.com/Itros97/script-launcher/internal/domain"
 	"github.com/Itros97/script-launcher/internal/services"
 	"github.com/Itros97/script-launcher/internal/views"
+	"github.com/Itros97/script-launcher/internal/views/profiles"
+	"github.com/Itros97/script-launcher/internal/views/session"
 )
 
 // samples are the scripts shown in the pictures; backup-notes.sh is run before capturing.
@@ -64,11 +66,22 @@ func capture(out string) error {
 	for run.Running() {
 		time.Sleep(10 * time.Millisecond)
 	}
+	current, err := session.New(repository, service, time.Now, "")
+	if err != nil {
+		return err
+	}
+	settings := data.NewJSONSettingsRepository(data.OSFileStore{}, filepath.Join(folder, "settings.json"))
+	env := services.NewPythonEnvService(service, "python3", "calibre3d")
+	preview := services.NewPreviewService(folder, func() {})
+	calibre, err := profiles.NewCalibre3D(env, services.NewCaptureService(service, preview, folder), preview, settings)
+	if err != nil {
+		return err
+	}
+	app, err := views.NewAppView(current, profiles.DefaultRegistry(calibre), settings)
+	if err != nil {
+		return err
+	}
 	for _, dark := range []bool{false, true} {
-		app, err := views.NewAppView(repository, service, time.Now, "")
-		if err != nil {
-			return err
-		}
 		name := map[bool]string{false: "hero-light.png", true: "hero-dark.png"}[dark]
 		options := window.Options{Title: "Script Launcher", Width: 1100, Height: 560, Dark: dark, CapturePath: filepath.Join(out, name)}
 		if err := window.Run(options, app.Draw); err != nil {

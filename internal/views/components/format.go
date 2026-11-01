@@ -1,4 +1,4 @@
-package views
+package components
 
 import (
 	"os"
@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// shortPath writes the home folder as ~, as a shell prompt does.
-func shortPath(path, home string) string {
+// ShortPath writes the home folder as ~, as a shell prompt does.
+func ShortPath(path, home string) string {
 	if home == "" || (path != home && !strings.HasPrefix(path, home+string(filepath.Separator))) {
 		return path
 	}

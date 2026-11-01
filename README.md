@@ -34,7 +34,7 @@ vouch for.
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.png">
-  <img alt="The Script Launcher window: a list of three saved scripts on the left with run and remove buttons, and on the right the output of backup-notes.sh, with one warning line in red and a closing line saying it exited with code 0" src="docs/images/hero-light.png" width="720">
+  <img alt="The Script Launcher window: a list of three saved scripts on the left with run and remove buttons, and on the right the output of backup-notes.sh, with one warning line in red and a closing line saying it ended with code 0" src="docs/images/hero-light.png" width="720">
 </picture>
 <br>
 <sub>A finished run: standard output in the body colour, standard error in red, the launcher's own notes in blue.</sub>
@@ -44,14 +44,14 @@ vouch for.
 
 ```bash
 go run ./cmd/script-launcher                 # open the window (-dark for the dark theme)
-go run ./cmd/script-launcher -config my.json # keep the list in another file
+go run ./cmd/script-launcher -config-dir dir  # keep the list and settings in another folder
 go build -o bin/script-launcher ./cmd/script-launcher   # a binary to put in your PATH
 go test -race ./...                          # run the tests
 go run ./cmd/screenshots                     # redraw the pictures in docs/images
 ```
 
-Press **Add script**, choose a file, then press ▶ on its row. The list is saved in
-`~/.config/script-launcher/scripts.json`.
+The interface is in Spanish. Press **Añadir script**, choose a file, then press ▶ on its row. The list and the chosen profile are
+saved in `~/.config/script-launcher/`.
 
 It needs Go 1.25 or newer, cgo, and a display with OpenGL 4.1 (GLFW is built in).
 
@@ -59,8 +59,10 @@ It needs Go 1.25 or newer, cgo, and a display with OpenGL 4.1 (GLFW is built in)
 
 ## 🔍 How it works
 
-Each frame, the view reads the saved list and each script's latest run and describes the window
-again (Go UI is immediate mode). Pressing ▶ asks the run service to start the script in its own
+The window has profiles: layouts chosen in the toolbar, each built from the same pieces (the script
+list, the output panel) over one shared session, so a script keeps running when the layout changes.
+Each frame, the active profile reads the saved list and each script's latest run and describes the
+window again (Go UI is immediate mode). Pressing ▶ asks the run service to start the script in its own
 folder and process group; two goroutines copy its standard output and error, line by line, into
 the run and wake the window, which then draws the new lines. ■ sends `SIGTERM` to the whole group.
 Which program runs a file is decided by a registry of runners: `.sh` with bash, `.py` with
@@ -74,8 +76,9 @@ python3, `.js` and `.ts` with node, and anything else with the executable bit, d
 |---|---|
 | [Overview](docs/01-overview.md) | What the launcher does, and what it does not do yet. |
 | [Get started](docs/02-get-started.md) | Build it, add a script, run it, and where the list is kept. |
-| [Modules](docs/03-modules.md) | The layers, how they connect, and how to add a new kind of script. |
-| [Roadmap](docs/04-roadmap.md) | What could come next. |
+| [Modules](docs/03-modules.md) | The layers, how they connect, and how to add a profile or a new kind of script. |
+| [Calibre3D](docs/04-calibre3d.md) | The Calibre3D profile: one click to prepare the calibre3d project's Python environment, and named photos from its RealSense camera. |
+| [Roadmap](docs/05-roadmap.md) | What could come next. |
 
 ## Licence
 

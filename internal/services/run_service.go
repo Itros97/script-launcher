@@ -14,9 +14,6 @@ import (
 	"github.com/Itros97/script-launcher/internal/domain"
 )
 
-// ErrAlreadyRunning is returned when a script is started while its last run is still alive.
-var ErrAlreadyRunning = errors.New("script is already running")
-
 // OutputLimit is how many lines of output each run keeps.
 const OutputLimit = 2000
 
@@ -41,42 +38,47 @@ func (service *RunService) Resolve(path string) (domain.Runner, error) {
 		return nil, fmt.Errorf("cannot use %s: %w", path, err)
 	}
 	if !info.Mode().IsRegular() {
-		return nil, fmt.Errorf("cannot use %s: it is not a regular file", path)
+		return nil, fmt.Errorf("%w: %s", ErrNotAFile, path)
 	}
 	return service.registry.Resolve(path, info.Mode().Perm()&0o111 != 0)
 }
 
-// Start launches the script in its own folder and process group, streaming its output into a new Run.
+// Start launches a saved script in its own folder with the runner that matches it.
 func (service *RunService) Start(script domain.Script) (*Run, error) {
-	service.mutex.Lock()
-	defer service.mutex.Unlock()
-	if last, ok := service.runs[script.ID]; ok && last.Running() {
-		return nil, fmt.Errorf("%w: %s", ErrAlreadyRunning, script.Name)
-	}
 	runner, err := service.Resolve(script.Path)
 	if err != nil {
 		return nil, err
 	}
 	program, args := runner.Command(script.Path)
-	command := exec.Command(program, args...)
-	command.Dir = filepath.Dir(script.Path)
+	return service.StartCommand(script.ID, Command{Name: script.Name, Runner: runner.ID(), Program: program, Args: args, Dir: filepath.Dir(script.Path)})
+}
+
+// StartCommand launches a command in its own process group, streaming its output into a new Run kept under id.
+func (service *RunService) StartCommand(id string, spec Command) (*Run, error) {
+	service.mutex.Lock()
+	defer service.mutex.Unlock()
+	if last, ok := service.runs[id]; ok && last.Running() {
+		return nil, fmt.Errorf("%w: %s", ErrAlreadyRunning, spec.Name)
+	}
+	command := exec.Command(spec.Program, spec.Args...)
+	command.Dir = spec.Dir
 	command.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	stdout, err := command.StdoutPipe()
 	if err != nil {
-		return nil, fmt.Errorf("opening output of %s: %w", script.Name, err)
+		return nil, fmt.Errorf("opening output of %s: %w", spec.Name, err)
 	}
 	stderr, err := command.StderrPipe()
 	if err != nil {
-		return nil, fmt.Errorf("opening errors of %s: %w", script.Name, err)
+		return nil, fmt.Errorf("opening errors of %s: %w", spec.Name, err)
 	}
 	if err := command.Start(); err != nil {
-		return nil, fmt.Errorf("starting %s with %s: %w", script.Name, runner.ID(), err)
+		return nil, fmt.Errorf("starting %s with %s: %w", spec.Name, spec.Runner, err)
 	}
 	run := &Run{
-		command: command, output: domain.NewOutputBuffer(OutputLimit), status: Running, runner: runner.ID(),
+		command: command, output: domain.NewOutputBuffer(OutputLimit), status: Running, runner: spec.Runner,
 		startedAt: service.now(), now: service.now, onChange: service.onChange,
 	}
-	service.runs[script.ID] = run
+	service.runs[id] = run
 	go service.watch(run, stdout, stderr)
 	service.onChange()
 	return run, nil

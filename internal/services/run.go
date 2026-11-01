@@ -106,7 +106,7 @@ func (run *Run) finish(waitErr error) {
 		run.status = Failed
 	default:
 		run.status = Failed
-		run.output.Append(domain.Line{Text: fmt.Sprintf("waiting for the process failed: %v", waitErr), Stream: domain.System})
+		run.output.Append(domain.Line{Text: fmt.Sprintf("no se pudo esperar al proceso: %v", waitErr), Stream: domain.System})
 	}
 	run.output.Append(domain.Line{Text: run.summary(), Stream: domain.System})
 	run.mutex.Unlock()
@@ -117,11 +117,11 @@ func (run *Run) summary() string {
 	duration := run.endedAt.Sub(run.startedAt).Round(time.Millisecond)
 	switch run.status {
 	case Stopped:
-		return fmt.Sprintf("■ stopped after %s", duration)
+		return fmt.Sprintf("■ parado tras %s", duration)
 	case Succeeded:
-		return fmt.Sprintf("✓ exited with code 0 in %s", duration)
+		return fmt.Sprintf("✓ terminó con código 0 en %s", duration)
 	default:
-		return fmt.Sprintf("✗ exited with code %d in %s", run.exitCode, duration)
+		return fmt.Sprintf("✗ terminó con código %d en %s", run.exitCode, duration)
 	}
 }
 

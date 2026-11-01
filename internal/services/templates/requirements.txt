@@ -1,0 +1,11 @@
+# Dependencias de calibre3d para «Preparar entorno».
+# Una por línea. Añade aquí cualquier otra librería que use tu proyecto.
+
+# Cámara RealSense. La usan calibre3d y el botón «Guardar imagen».
+pyrealsense2
+
+# Cálculo con las imágenes de color y de profundidad.
+numpy
+
+# Tratamiento y guardado de imágenes (vistas y mapas en datos/resultados).
+opencv-python

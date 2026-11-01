@@ -17,3 +17,7 @@ scripts.json
 # Environment
 .env*
 !.env.example
+
+# Python
+__pycache__/
+.venv/

@@ -1,10 +1,7 @@
 package data
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"slices"
@@ -27,16 +24,9 @@ func NewJSONScriptRepository(store FileStore, path string, now func() time.Time)
 
 // List returns the saved scripts; a missing file is an empty list, a corrupt one is an error.
 func (repository *JSONScriptRepository) List() ([]domain.Script, error) {
-	content, err := repository.store.ReadFile(repository.path)
-	if errors.Is(err, fs.ErrNotExist) {
-		return nil, nil
-	}
-	if err != nil {
-		return nil, fmt.Errorf("reading saved scripts from %s: %w", repository.path, err)
-	}
 	var scripts []domain.Script
-	if err := json.Unmarshal(content, &scripts); err != nil {
-		return nil, fmt.Errorf("saved scripts file %s is corrupt, fix or delete it: %w", repository.path, err)
+	if err := readJSON(repository.store, repository.path, "saved scripts", &scripts); err != nil {
+		return nil, err
 	}
 	return scripts, nil
 }
@@ -64,14 +54,7 @@ func (repository *JSONScriptRepository) Remove(id string) error {
 }
 
 func (repository *JSONScriptRepository) save(scripts []domain.Script) error {
-	content, err := json.MarshalIndent(scripts, "", "\t")
-	if err != nil {
-		return fmt.Errorf("encoding saved scripts: %w", err)
-	}
-	if err := repository.store.WriteFile(repository.path, content); err != nil {
-		return fmt.Errorf("writing saved scripts to %s: %w", repository.path, err)
-	}
-	return nil
+	return writeJSON(repository.store, repository.path, "saved scripts", scripts)
 }
 
 // OSFileStore is a FileStore on the real disk.
