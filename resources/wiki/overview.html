@@ -1,0 +1,35 @@
+<h1 id="overview">Overview</h1>
+
+<hr>
+
+<p>Script Launcher is a desktop window that keeps a list of your scripts and runs them with one click.
+You find a script on disk once; after that it is a row in the list, ready to run. The interface is
+in Spanish; the names below are the ones on its buttons.</p>
+
+<h2 id="what-it-does">What it does</h2>
+
+<ul>
+<li><strong>Añadir script</strong> opens a file picker. The chosen file is checked (it must exist and be something
+the launcher knows how to run) and saved to the list.</li>
+<li><strong>▶</strong> runs the script. Its standard output and error appear live on the right, errors in red.</li>
+<li><strong>■</strong> stops it: the launcher sends <code>SIGTERM</code> to the script and every process it started.</li>
+<li>When the script ends, the last line says how: its exit code and how long it took. The row shows
+a green tick, a red cross or a grey square.</li>
+<li><strong>🗑</strong> removes a script from the list. The file on disk is left alone.</li>
+<li>A script whose file was moved or deleted shows a warning sign and cannot be run.</li>
+<li>The <strong>profile</strong> selector in the toolbar changes the window&rsquo;s layout. <strong>General</strong> is the list of
+scripts beside their output; <strong>Calibre3D</strong> prepares the calibre3d project&rsquo;s environment in one
+click (<a href="./calibre3d">Calibre3D</a>). Every profile shares the same list, running scripts keep
+running when you switch, and the window opens on the profile used last.</li>
+</ul>
+
+<h2 id="what-it-does-not-do-yet">What it does not do yet</h2>
+
+<ul>
+<li>Pass arguments or environment variables to a script.</li>
+<li>Read from the keyboard: a script&rsquo;s standard input is empty, so a script that asks a question
+gets no answer.</li>
+<li>Keep the output of past runs after the window closes.</li>
+</ul>
+
+<p>See the <a href="./roadmap">roadmap</a>.</p>

@@ -1,0 +1,89 @@
+<h1 id="get-started">Get started</h1>
+
+<hr>
+
+<h2 id="build-and-run">Build and run</h2>
+
+<p>You need Go 1.25 or newer, a C compiler for cgo, and a display with OpenGL 4.1.</p>
+<pre><code class="language-bash">go run ./cmd/script-launcher        <span class="c1"># follows the system&#39;s light or dark theme</span>
+go run ./cmd/script-launcher -dark  <span class="c1"># forces the dark theme</span>
+</code></pre>
+
+<p>To keep it at hand, build a binary and put it in your <code>PATH</code>:</p>
+<pre><code class="language-bash">go build -o ~/.local/bin/script-launcher ./cmd/script-launcher
+</code></pre>
+
+<h2 id="add-and-run-a-script">Add and run a script</h2>
+
+<ol>
+<li>Press <strong>Añadir script</strong>. The picker opens in the folder of the last script you added.</li>
+<li>Choose a file. It is saved and selected.</li>
+<li>Press <strong>▶</strong> on its row. The output appears on the right and follows new lines until you
+scroll up.</li>
+</ol>
+
+<p>The script runs in its own folder, so relative paths inside it work as they do from a terminal
+opened there.</p>
+
+<h2 id="which-program-runs-a-file">Which program runs a file</h2>
+
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Runs with</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>.sh</code>, <code>.bash</code></td>
+<td><code>bash</code></td>
+</tr>
+
+<tr>
+<td><code>.py</code></td>
+<td><code>python3</code></td>
+</tr>
+
+<tr>
+<td><code>.js</code>, <code>.mjs</code>, <code>.ts</code></td>
+<td><code>node</code></td>
+</tr>
+
+<tr>
+<td>anything else with the executable bit</td>
+<td>the file itself (its <code>#!</code> line decides)</td>
+</tr>
+</tbody>
+</table>
+<p>A file that matches none of these is refused when you add it.</p>
+
+<h2 id="where-the-list-is-kept">Where the list is kept</h2>
+
+<p>In <code>$XDG_CONFIG_HOME/script-launcher/</code>, which is <code>~/.config/script-launcher/</code> on most systems:</p>
+
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Holds</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>scripts.json</code></td>
+<td>The saved scripts.</td>
+</tr>
+
+<tr>
+<td><code>settings.json</code></td>
+<td>The profile used last.</td>
+</tr>
+</tbody>
+</table>
+<p><code>-config-dir &lt;folder&gt;</code> uses another folder.</p>
+
+<p>If either file is not valid JSON, the launcher refuses to start and says where it is, instead of
+overwriting it. Fix the file or delete it.</p>

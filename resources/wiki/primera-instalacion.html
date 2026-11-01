@@ -1,0 +1,211 @@
+<h1 id="primera-instalación-macos-y-fedora">Primera instalación (macOS y Fedora)</h1>
+
+<hr>
+
+<p>Esta guía es para dejar listo un ordenador recién sacado de la caja: instalar lo necesario, conectar
+la cámara RealSense D405 y hacer la primera medida con Script Launcher. No hace falta saber
+programar. Donde haya que escribir algo en la terminal, cópialo y pégalo tal cual.</p>
+
+<p>Sigue solo los pasos de tu sistema: <strong>macOS</strong> (un Mac) o <strong>Fedora</strong> (Linux).</p>
+
+<h2 id="qué-necesitas">Qué necesitas</h2>
+
+<ul>
+<li>El ordenador, con conexión a internet.</li>
+<li>La cámara <strong>Intel RealSense D405</strong> y su cable USB-C. Conéctala directamente al ordenador, sin
+hubs ni alargadores.</li>
+<li>La carpeta del proyecto <strong>calibre3d</strong> (te la pasarán en un USB o en una descarga). Es la carpeta
+que contiene <code>prueba.sh</code>, <code>requirements.txt</code> y otra carpeta llamada <code>calibre3d</code>.</li>
+<li>El tapete impreso y la cámara montada a unos 133 mm sobre él (lo explica el <code>README.md</code> del
+proyecto).</li>
+</ul>
+
+<h2 id="1-instalar-python">1. Instalar Python</h2>
+
+<p>Script Launcher usa Python para hablar con la cámara y hacer las medidas.</p>
+
+<p><strong>macOS</strong></p>
+
+<ol>
+<li>Entra en <a href="https://www.python.org/downloads/" target="_blank">python.org/downloads</a> y pulsa el botón amarillo
+<strong>Download Python 3.x</strong>.</li>
+<li>Abre el archivo descargado (<code>python-3.x-macos11.pkg</code>) y pulsa <strong>Continuar</strong> hasta el final.</li>
+<li>Al terminar se abre una carpeta de Python: haz doble clic en <strong>Install Certificates.command</strong>.
+Se abre una ventana negra; cuando diga que ha terminado, ciérrala.</li>
+</ol>
+
+<p>No uses el Python que el Mac ofrece instalar con las «herramientas de desarrollo»: Script Launcher
+busca primero el de python.org.</p>
+
+<p><strong>Fedora</strong></p>
+
+<p>Ya viene instalado. No hay que hacer nada.</p>
+
+<h2 id="2-dar-permiso-para-usar-la-cámara">2. Dar permiso para usar la cámara</h2>
+
+<p><strong>Fedora</strong></p>
+
+<p>Linux no deja usar la cámara a un usuario normal hasta que se le dice que es de confianza. Abre la
+aplicación <strong>Terminal</strong> (búscala en el menú), pega estas tres líneas y pulsa Intro. Te pedirá tu
+contraseña:</p>
+<pre><code class="language-bash">sudo curl -L -o /etc/udev/rules.d/99-realsense-libusb.rules https://raw.githubusercontent.com/IntelRealSense/librealsense/master/config/99-realsense-libusb.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+</code></pre>
+
+<p>Después <strong>desconecta la cámara y vuelve a conectarla</strong>.</p>
+
+<p><strong>macOS</strong></p>
+
+<p>No hay que instalar nada. Si al ver la cámara aparece un error de permisos USB, mira
+<a href="#si-algo-falla">Si algo falla</a>.</p>
+
+<h2 id="3-descargar-script-launcher">3. Descargar Script Launcher</h2>
+
+<p>Entra en la página de descargas:
+<strong><a href="https://github.com/Itros97/script-launcher/releases/latest" target="_blank">github.com/Itros97/script-launcher/releases/latest</a></strong></p>
+
+<p><strong>macOS</strong></p>
+
+<ol>
+<li>Descarga <strong>ScriptLauncher-macOS.zip</strong>. Sirve para todos los Mac (M1–M4 e Intel).</li>
+<li>Abre el zip: aparece <strong>Script Launcher</strong>. Arrástralo a la carpeta <strong>Aplicaciones</strong>.</li>
+<li>La primera vez, el Mac dirá que no puede comprobar el desarrollador. Es normal: la app no está
+firmada con una cuenta de pago de Apple. Para abrirla:
+
+<ul>
+<li>Abre <strong>Ajustes del Sistema → Privacidad y seguridad</strong>.</li>
+<li>Baja hasta el aviso sobre «Script Launcher» y pulsa <strong>Abrir igualmente</strong>.</li>
+<li>Confirma con <strong>Abrir</strong>. Solo hay que hacerlo una vez.</li>
+</ul></li>
+</ol>
+
+<p><strong>Fedora</strong></p>
+
+<ol>
+<li>Descarga <strong>script-launcher-linux-x86_64.tar.gz</strong>.</li>
+<li>Abre la carpeta Descargas, haz clic derecho en el archivo y elige <strong>Extraer aquí</strong>.</li>
+<li>Abre la <strong>Terminal</strong> y pega:</li>
+</ol>
+<pre><code class="language-bash">   bash ~/Descargas/script-launcher-linux-x86_64/install.sh
+</code></pre>
+
+<p>Si tu sistema está en inglés, la carpeta se llama <code>Downloads</code> en vez de <code>Descargas</code>.</p>
+
+<ol>
+<li>Script Launcher ya aparece en el menú de aplicaciones.</li>
+</ol>
+
+<h2 id="4-poner-el-proyecto-calibre3d-en-su-sitio">4. Poner el proyecto calibre3d en su sitio</h2>
+
+<p>Copia la carpeta <strong>calibre3d</strong> a tu carpeta <strong>Documentos</strong> (en Fedora, <code>Documentos</code>; en Mac,
+<code>Documentos</code> también). Así no se pierde entre las descargas.</p>
+
+<p>Dentro de esa carpeta deben verse, al menos, <code>prueba.sh</code>, <code>requirements.txt</code> y otra carpeta
+<code>calibre3d</code>.</p>
+
+<h2 id="5-preparar-calibre3d-en-script-launcher">5. Preparar Calibre3D en Script Launcher</h2>
+
+<ol>
+<li>Abre <strong>Script Launcher</strong>.</li>
+<li>Arriba a la izquierda, en el desplegable, elige <strong>Calibre3D</strong>.</li>
+<li>En la tarjeta <strong>Proyecto</strong>, pulsa <strong>Elegir carpeta</strong>. Se abre un selector (sus botones están en
+inglés): pulsa <strong>Home</strong> a la izquierda, haz clic en <strong>Documentos</strong> y luego en <strong>calibre3d</strong> (la
+de fuera, la que tiene <code>prueba.sh</code>) para entrar en ella, y pulsa <strong>Choose</strong>.</li>
+<li>En la tarjeta <strong>Entorno</strong>, pulsa <strong>Preparar entorno</strong>. A la derecha verás cómo se instala todo.
+Tarda unos minutos y descarga unos 300 MB.</li>
+<li>Cuando termine, el entorno dice 🟢 <strong>Listo</strong>.</li>
+</ol>
+
+<h2 id="6-comprobar-que-todo-funciona">6. Comprobar que todo funciona</h2>
+
+<ol>
+<li>En la tarjeta <strong>Medir</strong>, pulsa <strong>Demo sin cámara</strong>. En unos segundos aparecen arriba las medidas
+de una pieza simulada (unos 60 × 40 × 20 mm) y, debajo, su mapa de calor. Si lo ves, el
+programa funciona.</li>
+<li>Con la D405 conectada, en la tarjeta <strong>Cámara</strong> pulsa <strong>Ver cámara</strong>. A la derecha debe verse lo
+que ve la cámara. Pulsa <strong>Parar cámara</strong> cuando acabes.</li>
+</ol>
+
+<p align="center">
+  <img alt="Script Launcher en el perfil Calibre3D tras la demo: arriba el resultado con largo 59,97 mm, ancho 40,05 mm, espesor 19,99 mm y Feret 60,04 mm; debajo la salida del programa, el mapa de calor y la vista de la pieza" src="./images/calibre3d-medida.png" width="720">
+</p>
+
+<h2 id="7-medir-una-pieza">7. Medir una pieza</h2>
+
+<p>Calienta la cámara unos 10 minutos antes de empezar: la medida cambia un poco con la temperatura.</p>
+
+<ol>
+<li><strong>1. Plano</strong>: deja el tapete vacío y pulsa el botón. Se hace una vez al empezar la sesión.</li>
+<li><strong>2. Centrar</strong>: pon una moneda sobre la cruz del tapete y pulsa. A la derecha dice cuánto mover
+el tapete; muévelo y repite hasta que diga «Centrado».</li>
+<li><strong>3. Medir</strong>: pon la pieza dentro del círculo, pulsa, escribe un nombre (por ejemplo
+<code>muestra_001</code>, sin espacios) y pulsa <strong>Guardar</strong>. Arriba aparecen el largo, el ancho, el espesor
+y el Feret; debajo, el mapa de calor.</li>
+</ol>
+
+<p>Todo se guarda en la carpeta del proyecto, en <code>datos/resultados/</code>. Las fotos de <strong>Guardar imagen</strong>
+van a <code>datos/fotos/</code>.</p>
+
+<h2 id="si-algo-falla">Si algo falla</h2>
+
+<table>
+<thead>
+<tr>
+<th>Lo que ves</th>
+<th>Qué hacer</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>«No encuentro python3»</td>
+<td>En Mac, instala Python desde python.org (paso 1) y vuelve a abrir Script Launcher.</td>
+</tr>
+
+<tr>
+<td>«Sin proyecto» o «En esta carpeta no está el programa calibre3d»</td>
+<td>Pulsa <strong>Elegir carpeta</strong>, entra en la carpeta calibre3d de fuera (la que tiene <code>prueba.sh</code>) y pulsa <strong>Choose</strong>.</td>
+</tr>
+
+<tr>
+<td>«Esta carpeta tiene prueba.sh pero le falta la carpeta calibre3d/»</td>
+<td>Falta parte del proyecto: vuelve a copiar la carpeta completa.</td>
+</tr>
+
+<tr>
+<td>«Incompleto» con «Falta la librería…»</td>
+<td>Pulsa <strong>Preparar entorno</strong> otra vez. Si se repite, añade la librería que dice a <code>requirements.txt</code>.</td>
+</tr>
+
+<tr>
+<td>La instalación falla con errores de red</td>
+<td>Comprueba la conexión a internet y pulsa <strong>Preparar entorno</strong> otra vez.</td>
+</tr>
+
+<tr>
+<td>«No se encuentra ninguna RealSense conectada»</td>
+<td>Conecta la cámara directamente al ordenador, sin hub. En Fedora, repite el paso 2 y reconecta la cámara.</td>
+</tr>
+
+<tr>
+<td>En Mac, un error de permisos USB al usar la cámara</td>
+<td>Por verificar en un Mac: en algunas versiones de macOS la librería de la cámara necesita permisos de administrador. Avisa a quien te pasó el programa.</td>
+</tr>
+
+<tr>
+<td>En Mac, la instalación dice que no encuentra <code>pyrealsense2</code></td>
+<td>Por verificar en un Mac: puede que tu versión de Python aún no tenga la librería de la cámara. Avisa a quien te pasó el programa con el texto rojo de la derecha.</td>
+</tr>
+
+<tr>
+<td>La medida da avisos en naranja («Pieza lejos del centro»…)</td>
+<td>Lee el aviso: suele bastar con centrar la pieza o repetir el plano.</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p><strong>Nota:</strong> la parte de macOS no se ha probado todavía en un Mac con la D405. Si algo no coincide
+con lo que ves, apúntalo y pásalo para corregir la guía.</p>
+</blockquote>

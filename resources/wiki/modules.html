@@ -1,0 +1,123 @@
+<h1 id="modules">Modules</h1>
+
+<hr>
+
+<p>The code is split in layers, each in its own folder under <code>internal/</code>. Every layer only knows the
+ones below it, and <code>cmd/script-launcher/main.go</code> is the only place that builds them and passes
+each one what it needs.</p>
+<pre><code>views ─→ profiles ─→ components ─→ session ─→ services ─→ domain
+                                       └────→ data ─────→ domain
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Files</th>
+<th>What it holds</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>domain</code></td>
+<td><code>script.go</code>, <code>runner.go</code>, <code>output.go</code>, <code>profile.go</code></td>
+<td>Plain data and pure logic: a saved script, the runners and the registry that picks one, the output buffer, the profile IDs. No disk, no processes.</td>
+</tr>
+
+<tr>
+<td><code>data</code></td>
+<td><code>script_repository.go</code>, <code>settings_repository.go</code>, their <code>json_*</code> implementations, <code>json_file.go</code></td>
+<td>The repositories and their JSON files. The disk sits behind a <code>FileStore</code>, so tests use a map.</td>
+</tr>
+
+<tr>
+<td><code>services</code></td>
+<td><code>run_service.go</code>, <code>run.go</code>, <code>python_env_service.go</code>, <code>capture_service.go</code>, <code>preview_service.go</code></td>
+<td>Starting, watching and stopping processes; one <code>Run</code> per execution, safe to read from the UI while its goroutines write. Preparing and checking a Python <code>.venv</code>, saving photos, and the live camera view, with the scripts embedded in <code>capture/</code>.</td>
+</tr>
+
+<tr>
+<td><code>views/session</code></td>
+<td><code>session.go</code>, <code>actions.go</code></td>
+<td>What every profile shares: the scripts, the selection, the notices, the file picker, and the actions (add, remove, run, stop).</td>
+</tr>
+
+<tr>
+<td><code>views/components</code></td>
+<td><code>script_list.go</code>, <code>output_panel.go</code>, <code>bar.go</code>, …</td>
+<td>The pieces layouts are built from. Each draws from a session and calls its actions.</td>
+</tr>
+
+<tr>
+<td><code>views/profiles</code></td>
+<td><code>profile.go</code>, <code>default.go</code>, <code>calibre3d*.go</code></td>
+<td>The layouts, and the registry the selector offers. Calibre3D is split by card: project, environment, camera.</td>
+</tr>
+
+<tr>
+<td><code>views</code></td>
+<td><code>app_view.go</code></td>
+<td>The window: toolbar with the profile selector, the active profile, status bar, picker, notices.</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="a-frame">A frame</h2>
+
+<p>Go UI is immediate mode: there are no widget objects. Each frame <code>AppView.Draw</code> draws the toolbar,
+then calls the active profile&rsquo;s <code>Draw</code> with the session, then the status bar. A run&rsquo;s goroutines
+call <code>window.Wake()</code> after every line, so the window draws only when something changed and sleeps
+otherwise.</p>
+
+<h2 id="adding-a-profile">Adding a profile</h2>
+
+<p>A profile is anything that implements <code>profiles.Profile</code>:</p>
+<pre><code class="language-go"><span class="kd">type</span> <span class="nx">Profile</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">ID</span><span class="p">()</span> <span class="nx">domain</span><span class="p">.</span><span class="nx">ProfileID</span>
+	<span class="nf">Name</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="nf">Draw</span><span class="p">(</span><span class="nx">context</span> <span class="o">*</span><span class="nx">ui</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="nx">current</span> <span class="o">*</span><span class="nx">session</span><span class="p">.</span><span class="nx">Session</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<ol>
+<li>Add its ID to <code>internal/domain/profile.go</code>.</li>
+<li>Write the layout in a new file in <code>internal/views/profiles/</code>, building it from <code>components</code>
+(<code>ScriptList</code>, <code>ScriptRow</code>, <code>RunButtons</code>, <code>OutputPanel</code>, <code>OutputLines</code>, <code>Bar</code>) and plain Go UI.</li>
+<li>Add it to <code>DefaultRegistry</code> in <code>profile.go</code>. The selector shows profiles in that order; the
+first one is used when the saved profile is unknown.</li>
+</ol>
+
+<p>A profile that needs state of its own (a chosen tab, a typed value) keeps it in its own struct
+fields and is registered as a pointer. One that needs services gets them in a constructor, called
+from <code>main.go</code>, as <code>NewCalibre3D(env, settings)</code> does.</p>
+
+<h2 id="adding-a-kind-of-script">Adding a kind of script</h2>
+
+<p>A runner is anything that implements <code>domain.Runner</code>:</p>
+<pre><code class="language-go"><span class="kd">type</span> <span class="nx">Runner</span> <span class="kd">interface</span> <span class="p">{</span>
+	<span class="nf">ID</span><span class="p">()</span> <span class="kt">string</span>
+	<span class="nf">Matches</span><span class="p">(</span><span class="nx">path</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">executable</span> <span class="kt">bool</span><span class="p">)</span> <span class="kt">bool</span>
+	<span class="nf">Command</span><span class="p">(</span><span class="nx">path</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">program</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">args</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>For a new interpreter, add an <code>InterpreterRunner</code> to <code>DefaultRegistry</code> in
+<code>internal/domain/runner.go</code>, before the <code>ExecutableRunner</code> fallback:</p>
+<pre><code class="language-go"><span class="nx">InterpreterRunner</span><span class="p">{</span><span class="nx">Program</span><span class="p">:</span> <span class="s">&#34;ruby&#34;</span><span class="p">,</span> <span class="nx">Extensions</span><span class="p">:</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;.rb&#34;</span><span class="p">}},</span>
+</code></pre>
+
+<p>Then add a case to <code>TestResolvesInterpreterByExtension</code>.</p>
+
+<h2 id="tests">Tests</h2>
+<pre><code class="language-bash">go <span class="nb">test</span> -race ./...
+</code></pre>
+
+<ul>
+<li><code>domain</code> and <code>data</code> are tested with plain values and an in-memory <code>FileStore</code>.</li>
+<li><code>services</code> runs the small scripts in <code>internal/services/testdata</code>, creates real <code>.venv</code>s, and
+saves photos through a stand-in <code>pyrealsense2</code> (<code>testdata/fake_realsense</code>) that returns a solid
+frame, checking the PNG it writes.</li>
+<li><code>views</code> opens the window headless with Go UI&rsquo;s <code>uitest</code>, clicks the real buttons and the profile
+selector by name, and checks what the window shows.</li>
+</ul>
