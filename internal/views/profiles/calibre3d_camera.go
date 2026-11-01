@@ -22,6 +22,8 @@ func (profile *Calibre3D) drawCameraCard(context *ui.Context, current *session.S
 		switch {
 		case profile.status != domain.Ready:
 			context.Caption("Prepara el entorno para usar la cámara.")
+		case profile.stepRunning():
+			context.Caption("Espera a que termine la medida.")
 		case profile.capturing():
 			components.Badge(context, "loader-circle", "Guardando «"+profile.capture.alias+"»…", context.Theme.Primary)
 		default:
@@ -29,7 +31,7 @@ func (profile *Calibre3D) drawCameraCard(context *ui.Context, current *session.S
 			context.Row(func() {
 				profile.drawLiveToggle(context, current)
 				if context.PrimaryIconButton("camera", "Guardar imagen") {
-					profile.naming, profile.opening, profile.alias = true, true, ""
+					profile.askName(photoName)
 				}
 			})
 		}
@@ -38,7 +40,7 @@ func (profile *Calibre3D) drawCameraCard(context *ui.Context, current *session.S
 
 // drawLiveToggle opens or closes the live camera in the activity panel.
 func (profile *Calibre3D) drawLiveToggle(context *ui.Context, current *session.Session) {
-	if profile.preview.Running(profile.project) {
+	if profile.Preview.Running(profile.project) {
 		if context.IconButton("video-off", "Parar cámara") {
 			profile.Leave(current)
 		}
@@ -49,27 +51,11 @@ func (profile *Calibre3D) drawLiveToggle(context *ui.Context, current *session.S
 	}
 }
 
-// drawNameDialog asks for the photo's name and starts the capture when it is accepted.
-func (profile *Calibre3D) drawNameDialog(context *ui.Context, current *session.Session) {
-	if !profile.naming {
-		return
-	}
-	validate := func(alias string) error { return profile.camera.Validate(profile.project, alias) }
-	confirmed, closed := components.NameDialog(context, "Guardar imagen", "por ejemplo: pieza1", &profile.alias, profile.opening, validate)
-	profile.opening = false
-	if closed {
-		profile.naming = false
-	}
-	if confirmed {
-		profile.save(current, profile.alias)
-	}
-}
-
 // ---- actions ----
 
 // startPreview opens the live camera and shows it on the right.
 func (profile *Calibre3D) startPreview(current *session.Session) {
-	if err := profile.preview.Start(profile.project); err != nil {
+	if err := profile.Preview.Start(profile.project); err != nil {
 		current.Warn(err)
 		return
 	}
@@ -78,15 +64,15 @@ func (profile *Calibre3D) startPreview(current *session.Session) {
 
 // save keeps the frame on screen while the camera is live, and otherwise captures one and follows it on the right.
 func (profile *Calibre3D) save(current *session.Session, alias string) {
-	if profile.camera.Live(profile.project) {
-		if _, err := profile.camera.SaveLive(profile.project, alias); err != nil {
+	if profile.Camera.Live(profile.project) {
+		if _, err := profile.Camera.SaveLive(profile.project, alias); err != nil {
 			current.Warn(err)
 			return
 		}
 		current.Notify("Imagen guardada: "+alias+".png", false)
 		return
 	}
-	run, err := profile.camera.Capture(profile.project, alias)
+	run, err := profile.Camera.Capture(profile.project, alias)
 	if err != nil {
 		current.Warn(err)
 		return

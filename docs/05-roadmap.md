@@ -4,8 +4,8 @@
 
 Ideas, roughly in order. None of them is promised.
 
-- **Calibre3D steps**: buttons for `plano`, `centrar` and `medir <name>`, with the measurements
-  (height, length, width) and result pictures shown in the window.
+- **Calibre3D patterns and mat**: buttons for `patron <name> --real L A E` and `plantilla`.
+- **Calibre3D history**: the list of past measurements, to open one again, and export them as CSV.
 - **Calibre3D camera**: the depth image beside the colour one, guides drawn over the live view (the
   cross and the circle), and a thumbnail of the last photo.
 - **Arguments per script**: a field on each script for arguments, saved with it.

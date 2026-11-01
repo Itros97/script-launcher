@@ -21,12 +21,12 @@ requirements.txt** writes one into the project folder with what calibre3d needs:
 
 | Package | Why |
 |---|---|
-| `pyrealsense2` | The RealSense camera; **Guardar imagen** needs it too. |
-| `numpy` | Working with the colour and depth images. |
-| `opencv-python` | Processing and saving pictures (the views and maps in `datos/resultados`). |
+| `numpy>=1.24` | Point clouds and depth images. |
+| `scipy>=1.10` | Fitting the plane, segmenting and measuring the piece. |
+| `matplotlib>=3.7` | The thickness heat maps and the views (PNG). |
+| `pyrealsense2>=2.55` | The RealSense camera; **Ver cámara** and **Guardar imagen** need it too. |
 
-`numpy` and `opencv-python` are a guess at what calibre3d uses: add or remove lines to match the
-project. The button never overwrites a file: if `requirements.txt` already exists, the template is
+It is the calibre3d project's own `requirements.txt`. The button never overwrites a file: if `requirements.txt` already exists, the template is
 saved beside it as `requirements.plantilla.txt` to compare.
 
 ## The status
@@ -42,6 +42,7 @@ When the environment is incomplete, the card says why, from what Python answered
 | Reason shown | Means |
 |---|---|
 | En esta carpeta no está el programa calibre3d | The folder chosen is not the one with the `calibre3d` package: choose the project's folder, the one with `prueba.sh`. |
+| Esta carpeta tiene prueba.sh pero le falta la carpeta calibre3d/ | The right folder, but only `prueba.sh` was copied: copy the whole project, `calibre3d/` included. |
 | Falta la librería X: añade Y a requirements.txt | calibre3d imports a library that is not installed; Y is its pip name (`cv2` → `opencv-python`). |
 | Error al cargar calibre3d: … | Another error while importing; the text is Python's last line. |
 | 🟢 Listo | `import calibre3d` works in `.venv`. | Nothing. |
@@ -65,6 +66,33 @@ existing `.venv` is reused, not deleted. Pressing it again on a ready environmen
 preparar**) installs whatever is missing.
 
 It needs `python3` with the `venv` module and, for the dependencies, an internet connection.
+
+## Calibrating and measuring
+
+Once the status is **Listo**, the **Medir** card runs calibre3d's steps in order, each with what to
+do before pressing it:
+
+| Button | Runs | Do first |
+|---|---|---|
+| **1. Plano** | `python -m calibre3d plano` | Leave the mat empty. Once done, it says when and how noisy ("Hecho el 1 nov, 22:10 · ruido 0,04 mm"), from `datos/plano.json`. |
+| **2. Centrar** | `python -m calibre3d centrar` | Put a coin on the cross. Its output says how far to move the mat; `centrado_vista.png` shows under it. |
+| **3. Medir** | `python -m calibre3d medir <name>` | Put the piece inside the circle. It asks for the piece's name (letters, digits, `-`, `_`); a name already measured is refused, so no result is overwritten. Without a plane it says "Haz primero el plano", but lets you go on, as calibre3d does. |
+| **Demo sin cámara** | `python -m calibre3d demo` | Nothing: it measures a simulated piece, to try everything without the camera. |
+
+While a step runs, its output shows live in **Actividad** and the other steps, the photo and the
+camera wait. The live camera is closed before each step (with a notice), since calibre3d needs the
+camera alone.
+
+When **Medir** or the demo ends well, the launcher reads the result file calibre3d left
+(`datos/resultados/<name>.json`, or `demo/resultados/demo_canto.json`) and shows a strip at the top
+of **Actividad** with the length, width, thickness and maximum Feret diameter, and calibre3d's
+warnings. It stays there, whatever runs next, until another measurement replaces it. Under the
+output come the heat map (`_mapa.png`) and the view (`_vista.png`).
+
+If a step fails, its error shows in red under **Actividad** and the last result stays as it was.
+
+`patron` (calibrating with pieces of known size) and `plantilla` (the mat's PDF) are not buttons
+yet: run them from a terminal in the project folder.
 
 ## Seeing the camera
 
@@ -112,7 +140,6 @@ camera open.
 **Listo** means the package imports. It does not prove the camera is connected or that every
 dependency imported only later (inside a command) is installed.
 
-The calibration steps (`plano`, `centrar`, `medir`) are not buttons yet; see the
-[roadmap](05-roadmap.md). The photo capture and the live view have only been tested against a
-stand-in for `pyrealsense2`, not a real camera. When the calibration steps arrive, they will close
-the live view before running calibre3d, since only one program can use the camera.
+The photo capture, the live view and the steps that use the camera have only been tested against
+stand-ins for `pyrealsense2` and calibre3d, not a real camera. The demo was run with the real
+calibre3d project.

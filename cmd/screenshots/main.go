@@ -73,7 +73,10 @@ func capture(out string) error {
 	settings := data.NewJSONSettingsRepository(data.OSFileStore{}, filepath.Join(folder, "settings.json"))
 	env := services.NewPythonEnvService(service, "python3", "calibre3d")
 	preview := services.NewPreviewService(folder, func() {})
-	calibre, err := profiles.NewCalibre3D(env, services.NewCaptureService(service, preview, folder), preview, settings)
+	calibre, err := profiles.NewCalibre3D(profiles.Calibre3DServices{
+		Env: env, Camera: services.NewCaptureService(service, preview, folder), Preview: preview,
+		Calibre: services.NewCalibreService(service, preview), Settings: settings,
+	})
 	if err != nil {
 		return err
 	}

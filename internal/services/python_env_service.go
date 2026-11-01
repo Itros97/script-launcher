@@ -55,7 +55,9 @@ func (service *PythonEnvService) Check(dir string) (domain.EnvCheck, error) {
 	case err == nil:
 		return domain.EnvCheck{Status: domain.Ready}, nil
 	case errors.As(err, &exitErr):
-		return domain.EnvCheck{Status: domain.Incomplete, Reason: domain.DescribeImportFailure(service.module, stderr.String())}, nil
+		_, missing := os.Stat(filepath.Join(dir, domain.ProjectMarker))
+		reason := domain.DescribeImportFailure(service.module, stderr.String(), missing == nil)
+		return domain.EnvCheck{Status: domain.Incomplete, Reason: reason}, nil
 	default:
 		return domain.EnvCheck{Status: domain.Incomplete}, fmt.Errorf("checking the environment in %s: %w", dir, err)
 	}

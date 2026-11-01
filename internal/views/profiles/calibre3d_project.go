@@ -45,7 +45,7 @@ func (profile *Calibre3D) drawFolderPicker(context *ui.Context, current *session
 
 // choose saves a new project folder and checks it.
 func (profile *Calibre3D) choose(current *session.Session, folder string) {
-	if err := profile.settings.Update(func(settings *data.Settings) { settings.Calibre3DProject = folder }); err != nil {
+	if err := profile.Settings.Update(func(settings *data.Settings) { settings.Calibre3DProject = folder }); err != nil {
 		current.Warn(err)
 		return
 	}

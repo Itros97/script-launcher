@@ -47,7 +47,9 @@ func run() error {
 	env := services.NewPythonEnvService(service, "python3", "calibre3d")
 	preview := services.NewPreviewService(cacheDir(), window.Wake)
 	camera := services.NewCaptureService(service, preview, cacheDir())
-	calibre, err := profiles.NewCalibre3D(env, camera, preview, settings)
+	calibre, err := profiles.NewCalibre3D(profiles.Calibre3DServices{
+		Env: env, Camera: camera, Preview: preview, Calibre: services.NewCalibreService(service, preview), Settings: settings,
+	})
 	if err != nil {
 		return err
 	}

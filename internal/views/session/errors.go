@@ -24,11 +24,11 @@ func Describe(err error) string {
 	case errors.Is(err, services.ErrNoPython):
 		return "No encuentro python3. Instálalo y vuelve a intentarlo."
 	case errors.Is(err, domain.ErrEmptyAlias):
-		return "Escribe un nombre para la foto."
+		return "Escribe un nombre."
 	case errors.Is(err, domain.ErrInvalidAlias):
 		return fmt.Sprintf("Usa solo letras, números, - y _, sin espacios y hasta %d caracteres.", domain.MaxAliasLength)
 	case errors.Is(err, domain.ErrAliasTaken):
-		return "Ya hay una foto con ese nombre."
+		return "Ya existe uno con ese nombre: elige otro."
 	case errors.Is(err, services.ErrTemplateExists):
 		return "Ya existen requirements.txt y requirements.plantilla.txt: borra la plantilla si quieres otra."
 	case errors.Is(err, fs.ErrNotExist):

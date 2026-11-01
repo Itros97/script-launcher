@@ -16,7 +16,7 @@ import (
 // drawEnvCard shows the environment's status and the buttons that prepare and check it.
 func (profile *Calibre3D) drawEnvCard(context *ui.Context, current *session.Session) {
 	components.Card(context, "Entorno", func() {
-		icon, word, hint, colour := envLook(context, profile.status, profile.env.Module())
+		icon, word, hint, colour := envLook(context, profile.status, profile.Env.Module())
 		running := profile.setupRunning()
 		if running {
 			icon, word, hint, colour = "loader-circle", "Preparando…", "Instalando lo necesario. Puede tardar unos minutos.", context.Theme.Primary
@@ -76,7 +76,7 @@ func envLook(context *ui.Context, status domain.EnvStatus, module string) (icon,
 
 // check looks at the environment again and shows a problem if the check itself failed.
 func (profile *Calibre3D) check(current *session.Session) {
-	result, err := profile.env.Check(profile.project)
+	result, err := profile.Env.Check(profile.project)
 	profile.status, profile.reason = result.Status, result.Reason
 	_, missing := os.Stat(filepath.Join(profile.project, domain.RequirementsFile))
 	profile.hasReqs = missing == nil
@@ -98,7 +98,7 @@ func (profile *Calibre3D) saveTemplate(current *session.Session) {
 
 // setup starts preparing the environment and follows it on the right.
 func (profile *Calibre3D) setup(current *session.Session) {
-	run, err := profile.env.Setup(profile.project)
+	run, err := profile.Env.Setup(profile.project)
 	if err != nil {
 		current.Warn(err)
 		return
@@ -108,7 +108,7 @@ func (profile *Calibre3D) setup(current *session.Session) {
 
 // checkAfterSetup checks the environment once, when a setup run ends.
 func (profile *Calibre3D) checkAfterSetup(current *session.Session) {
-	run, ok := profile.env.LatestSetup(profile.project)
+	run, ok := profile.Env.LatestSetup(profile.project)
 	if !ok || run.Running() || run == profile.checked {
 		return
 	}
@@ -118,6 +118,6 @@ func (profile *Calibre3D) checkAfterSetup(current *session.Session) {
 
 // setupRunning tells whether the project's environment is being prepared now.
 func (profile *Calibre3D) setupRunning() bool {
-	run, ok := profile.env.LatestSetup(profile.project)
+	run, ok := profile.Env.LatestSetup(profile.project)
 	return ok && run.Running()
 }

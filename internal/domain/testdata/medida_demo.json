@@ -1,0 +1,44 @@
+{
+  "nombre": "demo_canto",
+  "fecha": "2026-11-01T23:11:49",
+  "resultado": {
+    "largo_mm": 59.97,
+    "ancho_mm": 40.0476,
+    "espesor_mm": 19.9875,
+    "espesor_max_bruto_mm": 20.0783,
+    "feret_max_mm": 60.0375,
+    "angulo_grados": 116.1048,
+    "area_huella_mm2": 1884.5381,
+    "volumen_aprox_mm3": 31003.6804,
+    "pixeles_pieza": 52854,
+    "tamano_pixel_mm": 0.1777,
+    "rms_plano_mm": 0.0378,
+    "angulo_borde_grados": 17.522,
+    "centro_x_mm": 6.5712,
+    "centro_y_mm": -5.985,
+    "aviso": []
+  },
+  "bruto": {
+    "largo_mm": 59.97,
+    "ancho_mm": 40.0476,
+    "espesor_mm": 19.9875,
+    "espesor_max_bruto_mm": 20.0783,
+    "feret_max_mm": 60.0375,
+    "angulo_grados": 116.1048,
+    "area_huella_mm2": 1884.5381,
+    "volumen_aprox_mm3": 31003.6804,
+    "pixeles_pieza": 52854,
+    "tamano_pixel_mm": 0.1777,
+    "rms_plano_mm": 0.0378,
+    "angulo_borde_grados": 17.522,
+    "centro_x_mm": 6.5712,
+    "centro_y_mm": -5.985,
+    "aviso": []
+  },
+  "correccion": {
+    "k_xy": 1.0,
+    "off_xy": 0.0,
+    "k_z": 1.0,
+    "off_z": 0.0
+  }
+}

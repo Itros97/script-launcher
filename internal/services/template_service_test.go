@@ -47,7 +47,7 @@ func TestTemplateNeedsAnExistingProject(t *testing.T) {
 }
 
 func TestTemplateListsTheCameraLibrary(t *testing.T) {
-	if !bytes.Contains(templates.Requirements, []byte("\npyrealsense2\n")) {
+	if !bytes.Contains(templates.Requirements, []byte("\npyrealsense2>=")) {
 		t.Error("the template must install pyrealsense2, which the photo capture needs")
 	}
 }

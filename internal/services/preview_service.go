@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/Itros97/script-launcher/internal/domain"
 	"github.com/Itros97/script-launcher/internal/services/capture"
@@ -84,6 +85,31 @@ func (service *PreviewService) Stop() error {
 		return fmt.Errorf("stopping the camera view %d: %w", pid, err)
 	}
 	return nil
+}
+
+// StopAndWait closes the live view and waits until the camera is released, up to timeout; it
+// tells whether a view was open.
+func (service *PreviewService) StopAndWait(timeout time.Duration) (bool, error) {
+	service.mutex.Lock()
+	open := service.running
+	service.mutex.Unlock()
+	if !open {
+		return false, nil
+	}
+	if err := service.Stop(); err != nil {
+		return true, err
+	}
+	for deadline := time.Now().Add(timeout); ; time.Sleep(20 * time.Millisecond) {
+		service.mutex.Lock()
+		closed := !service.running
+		service.mutex.Unlock()
+		if closed {
+			return true, nil
+		}
+		if time.Now().After(deadline) {
+			return true, fmt.Errorf("the camera view did not close within %s", timeout)
+		}
+	}
 }
 
 // Running tells whether the live view is open for this project.
