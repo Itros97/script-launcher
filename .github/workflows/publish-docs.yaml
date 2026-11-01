@@ -1,0 +1,27 @@
+name: Publish documents
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: akrck02/papiro-deploy@main
+        with:
+          title: "Script Launcher"
+          description: "A desktop window to save your scripts and run them with one click."
+          accent: "#2563EB"
+          path: "./docs"
+          isObsidianProject: false
+          showFooter: true
+          showBreadcrumb: true
+          showStartPage: true
+      - name: Deploy to github pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: .

@@ -1,0 +1,19 @@
+# Build output
+bin/
+*.exe
+*.test
+*.out
+
+# IDE and OS files
+.idea/
+.vscode/
+.zed/
+.DS_Store
+
+# Logs and local data
+*.log
+scripts.json
+
+# Environment
+.env*
+!.env.example
