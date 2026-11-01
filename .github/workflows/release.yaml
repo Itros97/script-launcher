@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
-      - run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev xorg-dev
+      - run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev xorg-dev libwayland-dev libxkbcommon-dev wayland-protocols
       - name: Build and pack
         run: |
           folder=script-launcher-linux-x86_64

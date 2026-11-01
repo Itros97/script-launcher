@@ -20,7 +20,7 @@ jobs:
           python-version: "3.13"
       - name: Install the window's build dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev xorg-dev
+        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev xorg-dev libwayland-dev libxkbcommon-dev wayland-protocols
       - name: Vet
         run: go vet ./...
       - name: Test
