@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/akrck02/go-ui/window"
@@ -44,7 +45,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	env := services.NewPythonEnvService(service, "python3", "calibre3d")
+	env := services.NewPythonEnvService(service, services.SystemPython(runtime.GOOS), "calibre3d")
 	preview := services.NewPreviewService(cacheDir(), window.Wake)
 	camera := services.NewCaptureService(service, preview, cacheDir())
 	calibre, err := profiles.NewCalibre3D(profiles.Calibre3DServices{

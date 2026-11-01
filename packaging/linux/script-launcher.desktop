@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Script Launcher
+Comment=Guarda tus scripts y lánzalos con un clic; perfil Calibre3D para la cámara RealSense
+Exec=@BIN@
+Icon=utilities-terminal
+Terminal=false
+Categories=Utility;Development;

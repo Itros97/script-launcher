@@ -7,7 +7,7 @@ Pick a script once and it stays in the list; press ▶ and its output shows up l
 red and the exit code at the end. It is a single Go program drawn with [Go UI](https://github.com/akrck02/go-ui) and needs no browser or server.
 
 [![Go](https://img.shields.io/github/go-mod/go-version/Itros97/script-launcher)](go.mod)
-![Platforms](https://img.shields.io/badge/runs%20on-Linux-informational)
+![Platforms](https://img.shields.io/badge/runs%20on-Linux%20%7C%20macOS-informational)
 ![Status](https://img.shields.io/badge/status-experiment-orange)
 [![Licence](https://img.shields.io/badge/licence-MIT-blue)](LICENSE)
 
@@ -22,10 +22,11 @@ AI assistant (Claude, by Anthropic) under my direction, in November 2026.** I de
 and how it should behave; the AI wrote the code, the tests and the docs. Every commit made this way
 carries a `Co-Authored-By: Claude` line.
 
-**Status: pending thorough review.** It builds, `go test -race ./...` passes (including UI tests
-that click the real buttons in a headless window), and the pictures below were captured from the
-real window. I have not yet reviewed it line by line. Treat it as a working draft, not as code I
-vouch for.
+**Status: pending thorough review.** It builds, `go test -race ./...` passes on Linux (including UI
+tests that click the real buttons in a headless window) and runs on macOS in CI, and the pictures
+below were captured from the real window. It has been used on Linux only; the macOS build and the
+RealSense camera parts are untested on real hardware. I have not yet reviewed it line by line.
+Treat it as a working draft, not as code I vouch for.
 
 > ⚠️ **Warning:** an educational experiment, **not suitable for production use**. APIs will break.
 
@@ -41,6 +42,14 @@ vouch for.
 </p>
 
 ## 🚀 Quick start
+
+**Download** the latest version from
+[Releases](https://github.com/Itros97/script-launcher/releases/latest): `ScriptLauncher-macOS.zip`
+(Apple silicon and Intel) or `script-launcher-linux-x86_64.tar.gz` (unpack it and run
+`bash install.sh`). Setting up a new computer for Calibre3D step by step, in Spanish:
+[Primera instalación](docs/05-primera-instalacion.md).
+
+From the source:
 
 ```bash
 go run ./cmd/script-launcher                 # open the window (-dark for the dark theme)
@@ -78,7 +87,10 @@ python3, `.js` and `.ts` with node, and anything else with the executable bit, d
 | [Get started](docs/02-get-started.md) | Build it, add a script, run it, and where the list is kept. |
 | [Modules](docs/03-modules.md) | The layers, how they connect, and how to add a profile or a new kind of script. |
 | [Calibre3D](docs/04-calibre3d.md) | The Calibre3D profile: one click to prepare the calibre3d project's Python environment, and named photos from its RealSense camera. |
-| [Roadmap](docs/05-roadmap.md) | What could come next. |
+| [Primera instalación](docs/05-primera-instalacion.md) | In Spanish: setting up a new Mac or Fedora computer, the camera and Calibre3D, step by step. |
+| [Roadmap](docs/06-roadmap.md) | What could come next. |
+
+[Read the docs online →](https://itros97.github.io/script-launcher/)
 
 ## Licence
 

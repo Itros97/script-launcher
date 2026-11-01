@@ -28,4 +28,4 @@ in Spanish; the names below are the ones on its buttons.
   gets no answer.
 - Keep the output of past runs after the window closes.
 
-See the [roadmap](05-roadmap.md).
+See the [roadmap](06-roadmap.md).
