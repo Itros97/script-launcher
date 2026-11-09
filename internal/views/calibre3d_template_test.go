@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -12,8 +13,18 @@ import (
 	"github.com/Itros97/script-launcher/internal/services/templates"
 )
 
-// The tests run on Linux, so the launcher picks and offers the Linux template first.
-const missingRequirements = "Sin requirements.txt: se usará la plantilla de Linux."
+// The launcher picks and offers the template of the computer the tests run on; other is the other one.
+var (
+	this, other         = platforms()
+	missingRequirements = "Sin requirements.txt: se usará la plantilla de " + this.Name() + "."
+)
+
+func platforms() (domain.Platform, domain.Platform) {
+	if this := domain.PlatformFor(runtime.GOOS); this == domain.MacOS {
+		return this, domain.Linux
+	}
+	return domain.Linux, domain.MacOS
+}
 
 func TestSetupWithoutRequirementsInstallsThisComputersTemplate(t *testing.T) {
 	project := calibreProject(t)
@@ -21,9 +32,9 @@ func TestSetupWithoutRequirementsInstallsThisComputersTemplate(t *testing.T) {
 	waitForText(t, app.window, missingRequirements)
 	click(t, app.window, "Preparar entorno")
 	waitForText(t, app.window, "Preparando…")
-	content, err := os.ReadFile(filepath.Join(project, domain.Linux.RequirementsFile()))
-	if err != nil || !bytes.Equal(content, templates.Requirements(domain.Linux)) {
-		t.Errorf("requirements-linux.txt is not the template: %v", err)
+	content, err := os.ReadFile(filepath.Join(project, this.RequirementsFile()))
+	if err != nil || !bytes.Equal(content, templates.Requirements(this)) {
+		t.Errorf("%s is not the template: %v", this.RequirementsFile(), err)
 	}
 	if slices.Contains(app.window.Texts(), missingRequirements) {
 		t.Error("the missing requirements hint is still shown")
@@ -34,15 +45,15 @@ func TestEachTemplateButtonSavesItsOwnFile(t *testing.T) {
 	project := calibreProject(t)
 	app := openCalibre(t, project)
 	waitForText(t, app.window, missingRequirements)
-	click(t, app.window, "Plantilla macOS")
-	waitForText(t, app.window, "Plantilla guardada: requirements-macos.txt")
-	if content, _ := os.ReadFile(filepath.Join(project, domain.MacOS.RequirementsFile())); !bytes.Equal(content, templates.Requirements(domain.MacOS)) {
-		t.Errorf("requirements-macos.txt is not the macOS template: %q", content)
+	click(t, app.window, "Plantilla "+other.Name())
+	waitForText(t, app.window, "Plantilla guardada: "+other.RequirementsFile())
+	if content, _ := os.ReadFile(filepath.Join(project, other.RequirementsFile())); !bytes.Equal(content, templates.Requirements(other)) {
+		t.Errorf("%s is not its template: %q", other.RequirementsFile(), content)
 	}
-	waitForText(t, app.window, missingRequirements) // the macOS file is not installed on Linux
-	click(t, app.window, "Plantilla Linux")
-	waitForText(t, app.window, "Plantilla guardada: requirements-linux.txt")
-	waitForText(t, app.window, "Se instalará requirements-linux.txt.")
+	waitForText(t, app.window, missingRequirements) // the other computer's file is not installed here
+	click(t, app.window, "Plantilla "+this.Name())
+	waitForText(t, app.window, "Plantilla guardada: "+this.RequirementsFile())
+	waitForText(t, app.window, "Se instalará "+this.RequirementsFile()+".")
 }
 
 func TestThisComputersFileWinsOverRequirementsTxt(t *testing.T) {
@@ -52,8 +63,8 @@ func TestThisComputersFileWinsOverRequirementsTxt(t *testing.T) {
 	}
 	app := openCalibre(t, project)
 	waitForText(t, app.window, "Se instalará requirements.txt.")
-	click(t, app.window, "Plantilla Linux")
-	waitForText(t, app.window, "Se instalará requirements-linux.txt.")
+	click(t, app.window, "Plantilla "+this.Name())
+	waitForText(t, app.window, "Se instalará "+this.RequirementsFile()+".")
 	if content, _ := os.ReadFile(filepath.Join(project, domain.RequirementsFile)); string(content) != "mine\n" {
 		t.Errorf("requirements.txt was changed: %q", content)
 	}
