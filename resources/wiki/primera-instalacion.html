@@ -22,9 +22,8 @@ proyecto).</li>
 
 <h2 id="1-python">1. Python</h2>
 
-<p>No hay que instalarlo. Script Launcher usa Python para hablar con la cámara y hacer las medidas, y si
-el ordenador no lo tiene, lo descarga él solo la primera vez que pulses <strong>Preparar entorno</strong>
-(paso 5). No pide contraseña ni abre ningún instalador.</p>
+<p>No hay que instalarlo a mano. Script Launcher usa Python 3.12 para hablar con la cámara y hacer las
+medidas, y lo instala él mismo con un botón (paso 5). No pide contraseña ni abre ningún instalador.</p>
 
 <p>Si en el Mac aparece una ventana que ofrece instalar las «herramientas de desarrollo», ciérrala con
 <strong>Cancelar</strong>: no hacen falta.</p>
@@ -97,14 +96,18 @@ ningún <code>requirements.txt</code>: Script Launcher pone el suyo al preparar 
 <ol>
 <li>Abre <strong>Script Launcher</strong>.</li>
 <li>Arriba a la izquierda, en el desplegable, elige <strong>Calibre3D</strong>.</li>
+<li>En la tarjeta <strong>Python</strong>, pulsa el botón azul <strong>Instalar Python 3.12</strong>. Tarda un minuto (descarga
+unos 25 MB en Mac y 67 MB en Linux). Cuando termine dice 🟢 <strong>Python 3.12 listo</strong>. Solo hay que
+hacerlo una vez en cada ordenador.</li>
 <li>En la tarjeta <strong>Proyecto</strong>, pulsa <strong>Elegir carpeta</strong>. Se abre un selector (sus botones están en
 inglés): pulsa <strong>Home</strong> a la izquierda, haz clic en <strong>Documentos</strong> y luego en <strong>calibre3d</strong> (la
 de fuera, la que tiene <code>prueba.sh</code>) para entrar en ella, y pulsa <strong>Choose</strong>.</li>
 <li>En la tarjeta <strong>Entorno</strong>, pulsa <strong>Preparar entorno</strong>. A la derecha verás cómo se instala todo.
-Tarda unos minutos y descarga unos 300 MB. Si el ordenador no tenía Python, la primera línea dice
-«descargando Python»: es normal, solo pasa una vez.</li>
+Tarda unos minutos y descarga unos 300 MB.</li>
 <li>Cuando termine, el entorno dice 🟢 <strong>Listo</strong>.</li>
 </ol>
+
+<p>Siempre que no sepas qué hacer, pulsa el botón azul: es el siguiente paso.</p>
 
 <h2 id="6-comprobar-que-todo-funciona">6. Comprobar que todo funciona</h2>
 
@@ -149,7 +152,7 @@ van a <code>datos/fotos/</code>.</p>
 <tbody>
 <tr>
 <td>«La descarga de Python está dañada»</td>
-<td>Se cortó la conexión a mitad. Pulsa <strong>Preparar entorno</strong> otra vez.</td>
+<td>Se cortó la conexión a mitad. Pulsa <strong>Instalar Python 3.12</strong> otra vez.</td>
 </tr>
 
 <tr>

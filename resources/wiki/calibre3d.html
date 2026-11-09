@@ -160,16 +160,23 @@ packages it only creates <code>.venv</code> and says there was nothing to instal
 existing <code>.venv</code> is reused, not deleted. Pressing it again on a ready environment (<strong>Volver a
 preparar</strong>) installs whatever is missing.</p>
 
-<p>It needs an internet connection. The <code>python3</code> it starts from is, in this order: one the launcher
-downloaded earlier, the computer&rsquo;s own (on macOS the python.org or Homebrew one; Apple&rsquo;s
-<code>/usr/bin/python3</code> does not count, since without the developer tools it only opens a dialog), or,
-when there is none, a fresh download. That download is a ready-made Python 3.12 from
-<a href="https://github.com/astral-sh/python-build-standalone" target="_blank">python-build-standalone</a> for Linux (x86-64,
-ARM) and macOS (Apple silicon, Intel): no installer and no password. Its checksum is pinned in
-<code>internal/domain/python_download.go</code>, so a damaged or altered file is refused. It is unpacked in
-<code>python-3.12.15/</code> inside the config folder (<code>~/.config/script-launcher/</code> on Linux,
-<code>~/Library/Application Support/script-launcher/</code> on macOS) and used from then on by every project.
-Delete that folder to go back to the computer&rsquo;s own Python.</p>
+<p>It needs an internet connection. The environment is always made with the launcher&rsquo;s own Python 3.12
+on Linux (x86-64, ARM) and macOS (Apple silicon, Intel), so every computer runs the same, tested
+version. The <strong>Python</strong> card, the first one, shows whether it is installed and offers <strong>Instalar
+Python 3.12</strong>; while it is missing that is the primary button and <strong>Preparar entorno</strong> is a quiet
+one, and pressing <strong>Preparar entorno</strong> anyway downloads Python first.</p>
+
+<p>The download is a ready-made Python from
+<a href="https://github.com/astral-sh/python-build-standalone" target="_blank">python-build-standalone</a>: no installer and
+no password. Its checksum is pinned in <code>internal/domain/python_download.go</code>, so a damaged or altered
+file is refused, and it is unpacked through a sibling folder, so a cut connection never leaves a
+half-installed Python. It lives in <code>python-3.12.15/</code> inside the config folder
+(<code>~/.config/script-launcher/</code> on Linux, <code>~/Library/Application Support/script-launcher/</code> on macOS)
+and every project uses it.</p>
+
+<p>On any other computer the card is hidden and the computer&rsquo;s own <code>python3</code> is used (on macOS the
+python.org or Homebrew one; Apple&rsquo;s <code>/usr/bin/python3</code> does not count, since without the developer
+tools it only opens a dialog).</p>
 
 <h2 id="calibrating-and-measuring">Calibrating and measuring</h2>
 
