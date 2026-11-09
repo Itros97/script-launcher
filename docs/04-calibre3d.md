@@ -77,16 +77,23 @@ packages it only creates `.venv` and says there was nothing to install. An
 existing `.venv` is reused, not deleted. Pressing it again on a ready environment (**Volver a
 preparar**) installs whatever is missing.
 
-It needs an internet connection. The `python3` it starts from is, in this order: one the launcher
-downloaded earlier, the computer's own (on macOS the python.org or Homebrew one; Apple's
-`/usr/bin/python3` does not count, since without the developer tools it only opens a dialog), or,
-when there is none, a fresh download. That download is a ready-made Python 3.12 from
-[python-build-standalone](https://github.com/astral-sh/python-build-standalone) for Linux (x86-64,
-ARM) and macOS (Apple silicon, Intel): no installer and no password. Its checksum is pinned in
-`internal/domain/python_download.go`, so a damaged or altered file is refused. It is unpacked in
-`python-3.12.15/` inside the config folder (`~/.config/script-launcher/` on Linux,
-`~/Library/Application Support/script-launcher/` on macOS) and used from then on by every project.
-Delete that folder to go back to the computer's own Python.
+It needs an internet connection. The environment is always made with the launcher's own Python 3.12
+on Linux (x86-64, ARM) and macOS (Apple silicon, Intel), so every computer runs the same, tested
+version. The **Python** card, the first one, shows whether it is installed and offers **Instalar
+Python 3.12**; while it is missing that is the primary button and **Preparar entorno** is a quiet
+one, and pressing **Preparar entorno** anyway downloads Python first.
+
+The download is a ready-made Python from
+[python-build-standalone](https://github.com/astral-sh/python-build-standalone): no installer and
+no password. Its checksum is pinned in `internal/domain/python_download.go`, so a damaged or altered
+file is refused, and it is unpacked through a sibling folder, so a cut connection never leaves a
+half-installed Python. It lives in `python-3.12.15/` inside the config folder
+(`~/.config/script-launcher/` on Linux, `~/Library/Application Support/script-launcher/` on macOS)
+and every project uses it.
+
+On any other computer the card is hidden and the computer's own `python3` is used (on macOS the
+python.org or Homebrew one; Apple's `/usr/bin/python3` does not count, since without the developer
+tools it only opens a dialog).
 
 ## Calibrating and measuring
 

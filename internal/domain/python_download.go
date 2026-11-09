@@ -57,6 +57,6 @@ rm -f "$archive"`
 // PythonInstallSteps are the steps that put download into dir, to run before SetupPlan with
 // DownloadedPython(dir).
 func PythonInstallSteps(download PythonDownload, dir string) []SetupStep {
-	label := "No hay Python en este ordenador: descargando Python " + download.Version + " (unos " + strconv.Itoa(download.SizeMB) + " MB)"
+	label := "Descargando Python " + download.Version + " (unos " + strconv.Itoa(download.SizeMB) + " MB)"
 	return []SetupStep{{Label: label, Program: "bash", Args: []string{"-c", pythonInstallScript, "bash", download.URL, download.SHA256, dir}}}
 }

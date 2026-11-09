@@ -111,9 +111,9 @@ func fakePythonDownload(t *testing.T) domain.PythonDownload {
 	return domain.PythonDownload{Version: "3.12.0", URL: "file://" + archive, SHA256: hex.EncodeToString(sum[:]), SizeMB: 1}
 }
 
-func TestSetupDownloadsPythonWhenTheComputerHasNone(t *testing.T) {
+func TestSetupDownloadsPythonEvenWhenTheComputerHasOne(t *testing.T) {
 	pythonDir := filepath.Join(t.TempDir(), "python-3.12.0")
-	service := newEnvService("python-that-does-not-exist").WithDownload(fakePythonDownload(t), pythonDir)
+	service := newEnvService("python3").WithDownload(fakePythonDownload(t), pythonDir)
 	dir := fakeProject(t)
 	run, err := service.Setup(dir)
 	if err != nil {
@@ -123,7 +123,7 @@ func TestSetupDownloadsPythonWhenTheComputerHasNone(t *testing.T) {
 	if snapshot.Status != Succeeded {
 		t.Fatalf("setup failed: %+v", snapshot.Lines)
 	}
-	if !strings.Contains(snapshot.Lines[0].Text, "descargando Python 3.12.0") {
+	if !strings.Contains(snapshot.Lines[0].Text, "Descargando Python 3.12.0") {
 		t.Errorf("first line: %q", snapshot.Lines[0].Text)
 	}
 	if status := checkStatus(t, service, dir); status != domain.Ready {
@@ -146,7 +146,35 @@ func TestSetupKeepsUsingADownloadedPython(t *testing.T) {
 		t.Fatal(err)
 	}
 	snapshot := waitFor(t, run)
-	if snapshot.Status != Succeeded || strings.Contains(snapshot.Lines[0].Text, "descargando") {
+	if snapshot.Status != Succeeded || strings.Contains(snapshot.Lines[0].Text, "Descargando") {
 		t.Errorf("got %+v", snapshot.Lines)
+	}
+}
+
+func TestInstallPythonDownloadsItOnItsOwn(t *testing.T) {
+	pythonDir := filepath.Join(t.TempDir(), "config", "python-3.12.0")
+	service := newEnvService("python3").WithDownload(fakePythonDownload(t), pythonDir)
+	if service.PythonInstalled() {
+		t.Fatal("installed before installing")
+	}
+	run, err := service.InstallPython()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if latest, ok := service.LatestPythonInstall(); !ok || latest != run {
+		t.Error("LatestPythonInstall does not return the run")
+	}
+	snapshot := waitFor(t, run)
+	if snapshot.Status != Succeeded || snapshot.Lines[1].Text != "✓ Python instalado" {
+		t.Fatalf("got %+v", snapshot.Lines)
+	}
+	if !service.PythonInstalled() {
+		t.Error("not installed after installing")
+	}
+}
+
+func TestInstallPythonNeedsADownload(t *testing.T) {
+	if _, err := newEnvService("python3").InstallPython(); !errors.Is(err, ErrNoPython) {
+		t.Errorf("got %v, want ErrNoPython", err)
 	}
 }

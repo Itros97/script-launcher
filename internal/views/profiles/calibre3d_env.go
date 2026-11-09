@@ -26,7 +26,7 @@ func (profile *Calibre3D) drawEnvCard(context *ui.Context, current *session.Sess
 		}
 		components.Badge(context, icon, word, colour)
 		components.Paragraph(context, hint, ui.TextStyle{Size: context.Theme.SmallTextSize, Color: context.Theme.InkSoft})
-		if profile.status == domain.NoProject || running {
+		if profile.status == domain.NoProject || running || profile.pythonInstalling() {
 			return
 		}
 		if !profile.hasReqs {
@@ -49,12 +49,18 @@ func (profile *Calibre3D) drawEnvCard(context *ui.Context, current *session.Sess
 	})
 }
 
-// setupButton is the main call to action until the environment is ready, and a quieter one after.
+// setupButton is the main call to action until the environment is ready, and a quieter one after,
+// or while Python, whose button comes first, is still to be installed.
 func (profile *Calibre3D) setupButton(context *ui.Context) bool {
-	if profile.status == domain.Ready {
+	_, downloads := profile.Env.Download()
+	switch {
+	case profile.status == domain.Ready:
 		return context.IconButton("download", "Volver a preparar")
+	case downloads && !profile.pythonReady:
+		return context.IconButton("download", "Preparar entorno")
+	default:
+		return context.PrimaryIconButton("download", "Preparar entorno")
 	}
-	return context.PrimaryIconButton("download", "Preparar entorno")
 }
 
 // envLook is the icon, word, hint and colour that stand for an environment status.
@@ -78,6 +84,7 @@ func envLook(context *ui.Context, status domain.EnvStatus, module string) (icon,
 func (profile *Calibre3D) check(current *session.Session) {
 	result, err := profile.Env.Check(profile.project)
 	profile.status, profile.reason = result.Status, result.Reason
+	profile.pythonReady = profile.Env.PythonInstalled()
 	_, missing := os.Stat(filepath.Join(profile.project, domain.RequirementsFile))
 	profile.hasReqs = missing == nil
 	if err != nil {

@@ -20,9 +20,8 @@ Sigue solo los pasos de tu sistema: **macOS** (un Mac) o **Fedora** (Linux).
 
 ## 1. Python
 
-No hay que instalarlo. Script Launcher usa Python para hablar con la cámara y hacer las medidas, y si
-el ordenador no lo tiene, lo descarga él solo la primera vez que pulses **Preparar entorno**
-(paso 5). No pide contraseña ni abre ningún instalador.
+No hay que instalarlo a mano. Script Launcher usa Python 3.12 para hablar con la cámara y hacer las
+medidas, y lo instala él mismo con un botón (paso 5). No pide contraseña ni abre ningún instalador.
 
 Si en el Mac aparece una ventana que ofrece instalar las «herramientas de desarrollo», ciérrala con
 **Cancelar**: no hacen falta.
@@ -88,13 +87,17 @@ ningún `requirements.txt`: Script Launcher pone el suyo al preparar el entorno.
 
 1. Abre **Script Launcher**.
 2. Arriba a la izquierda, en el desplegable, elige **Calibre3D**.
-3. En la tarjeta **Proyecto**, pulsa **Elegir carpeta**. Se abre un selector (sus botones están en
+3. En la tarjeta **Python**, pulsa el botón azul **Instalar Python 3.12**. Tarda un minuto (descarga
+   unos 25 MB en Mac y 67 MB en Linux). Cuando termine dice 🟢 **Python 3.12 listo**. Solo hay que
+   hacerlo una vez en cada ordenador.
+4. En la tarjeta **Proyecto**, pulsa **Elegir carpeta**. Se abre un selector (sus botones están en
    inglés): pulsa **Home** a la izquierda, haz clic en **Documentos** y luego en **calibre3d** (la
    de fuera, la que tiene `prueba.sh`) para entrar en ella, y pulsa **Choose**.
-4. En la tarjeta **Entorno**, pulsa **Preparar entorno**. A la derecha verás cómo se instala todo.
-   Tarda unos minutos y descarga unos 300 MB. Si el ordenador no tenía Python, la primera línea dice
-   «descargando Python»: es normal, solo pasa una vez.
-5. Cuando termine, el entorno dice 🟢 **Listo**.
+5. En la tarjeta **Entorno**, pulsa **Preparar entorno**. A la derecha verás cómo se instala todo.
+   Tarda unos minutos y descarga unos 300 MB.
+6. Cuando termine, el entorno dice 🟢 **Listo**.
+
+Siempre que no sepas qué hacer, pulsa el botón azul: es el siguiente paso.
 
 ## 6. Comprobar que todo funciona
 
@@ -126,7 +129,7 @@ van a `datos/fotos/`.
 
 | Lo que ves | Qué hacer |
 |---|---|
-| «La descarga de Python está dañada» | Se cortó la conexión a mitad. Pulsa **Preparar entorno** otra vez. |
+| «La descarga de Python está dañada» | Se cortó la conexión a mitad. Pulsa **Instalar Python 3.12** otra vez. |
 | «No encuentro python3 y no puedo descargarlo» | Tu ordenador no es ni un Mac ni un Linux normal de 64 bits. Instala Python 3.12 desde [python.org](https://www.python.org/downloads/) y vuelve a abrir Script Launcher. |
 | «Sin proyecto» o «En esta carpeta no está el programa calibre3d» | Pulsa **Elegir carpeta**, entra en la carpeta calibre3d de fuera (la que tiene `prueba.sh`) y pulsa **Choose**. |
 | «Esta carpeta tiene prueba.sh pero le falta la carpeta calibre3d/» | Falta parte del proyecto: vuelve a copiar la carpeta completa. |

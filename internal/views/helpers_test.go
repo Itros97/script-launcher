@@ -38,6 +38,12 @@ func writeScript(t *testing.T, name, content string) string {
 // openApp saves the given paths and settings, builds the window and shows its first frame.
 func openApp(t *testing.T, saved data.Settings, paths ...string) testApp {
 	t.Helper()
+	return openAppWith(t, saved, func(*services.PythonEnvService) {}, paths...)
+}
+
+// openAppWith is openApp with a chance to set up the Python environment service first.
+func openAppWith(t *testing.T, saved data.Settings, setUp func(*services.PythonEnvService), paths ...string) testApp {
+	t.Helper()
 	folder := t.TempDir()
 	scripts := data.NewJSONScriptRepository(data.OSFileStore{}, filepath.Join(folder, "scripts.json"), time.Now)
 	settings := data.NewJSONSettingsRepository(data.OSFileStore{}, filepath.Join(folder, "settings.json"))
@@ -56,6 +62,7 @@ func openApp(t *testing.T, saved data.Settings, paths ...string) testApp {
 		t.Fatal(err)
 	}
 	env := services.NewPythonEnvService(service, "python3", "calibre3d")
+	setUp(env)
 	scriptDir := t.TempDir()
 	preview := services.NewPreviewService(scriptDir, func() {})
 	t.Cleanup(func() { _ = preview.Stop() })

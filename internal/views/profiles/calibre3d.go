@@ -23,23 +23,25 @@ type Calibre3DServices struct {
 // see and photograph what its RealSense camera sees, and calibrate and measure pieces.
 type Calibre3D struct {
 	Calibre3DServices
-	project  string
-	status   domain.EnvStatus
-	reason   string        // why the environment is not ready, when the check could tell
-	hasReqs  bool          // the project has a requirements.txt
-	stale    bool          // the status has not been checked since the profile was built
-	checked  *services.Run // the setup run whose end was already checked
-	choosing bool          // the folder picker is shown
-	naming   nameKind      // what the name dialog asks for, if shown
-	opening  bool          // the name dialog opens on this frame
-	name     string        // the name being typed
-	capture  photoCapture  // the last photo started
-	step     stepRun       // the last calibre3d step started
-	plane    planeState    // the project's reference plane
-	result   *measured     // the last measurement shown
-	activity activity      // what the right panel shows
-	view     components.CameraView
-	images   components.ImageFiles
+	project       string
+	status        domain.EnvStatus
+	reason        string        // why the environment is not ready, when the check could tell
+	hasReqs       bool          // the project has a requirements.txt
+	stale         bool          // the status has not been checked since the profile was built
+	checked       *services.Run // the setup run whose end was already checked
+	pythonReady   bool          // the Python environments are made with is installed
+	pythonChecked *services.Run // the Python installation whose end was already checked
+	choosing      bool          // the folder picker is shown
+	naming        nameKind      // what the name dialog asks for, if shown
+	opening       bool          // the name dialog opens on this frame
+	name          string        // the name being typed
+	capture       photoCapture  // the last photo started
+	step          stepRun       // the last calibre3d step started
+	plane         planeState    // the project's reference plane
+	result        *measured     // the last measurement shown
+	activity      activity      // what the right panel shows
+	view          components.CameraView
+	images        components.ImageFiles
 }
 
 // activity is the last thing launched from the profile, shown on the right: a run with its output
@@ -73,12 +75,14 @@ func (profile *Calibre3D) Draw(context *ui.Context, current *session.Session) {
 		profile.check(current)
 	}
 	profile.checkAfterSetup(current)
+	profile.checkAfterPythonInstall(current)
 	profile.announceCapture(current)
 	profile.finishStep(current)
 	context.Box(ui.Layout{Width: ui.Grow(), Height: ui.Grow()}, func() {
 		context.Frame(ui.Layout{Width: ui.Fixed(360), Height: ui.Grow()}, ui.Look{Fill: context.Theme.Sunken}, func() {
 			column := ui.Layout{Direction: ui.Vertical, Width: ui.Grow(), Height: ui.Grow(), Padding: ui.Pad(16), Gap: 12}
 			context.ScrollArea("calibre3d-cards", column, func() {
+				profile.drawPythonCard(context, current)
 				profile.drawProjectCard(context, current)
 				profile.drawEnvCard(context, current)
 				profile.drawMeasureCard(context, current)

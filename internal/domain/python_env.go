@@ -39,8 +39,14 @@ func SetupPlan(python string, hasRequirements bool) []SetupStep {
 	)
 }
 
-// SetupScript turns steps into one bash script that announces each step and stops at the first that fails.
+// SetupScript turns steps into one bash script that announces each step, stops at the first that
+// fails and ends saying the environment is ready.
 func SetupScript(steps []SetupStep) string {
+	return InstallScript(steps) + "echo " + shellQuote("✓ Entorno preparado") + "\n"
+}
+
+// InstallScript turns steps into one bash script that announces each step and stops at the first that fails.
+func InstallScript(steps []SetupStep) string {
 	var script strings.Builder
 	script.WriteString("set -e\n")
 	for _, step := range steps {
@@ -54,7 +60,6 @@ func SetupScript(steps []SetupStep) string {
 		}
 		script.WriteString(strings.Join(words, " ") + "\n")
 	}
-	script.WriteString("echo " + shellQuote("✓ Entorno preparado") + "\n")
 	return script.String()
 }
 

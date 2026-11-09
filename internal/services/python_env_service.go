@@ -33,12 +33,48 @@ func NewPythonEnvService(runs *RunService, python, module string) *PythonEnvServ
 	return &PythonEnvService{runs: runs, python: python, module: module}
 }
 
-// WithDownload lets Setup fetch download into dir when the computer has no Python, and use it from
-// then on.
+// WithDownload makes the downloaded Python the one environments are created with: InstallPython
+// fetches it into dir, and Setup fetches it first when it is not there yet. The computer's own
+// Python is then not used, so every computer runs the same, tested version.
 func (service *PythonEnvService) WithDownload(download domain.PythonDownload, dir string) *PythonEnvService {
 	service.download, service.downloadDir = &download, dir
 	return service
 }
+
+// Download returns the Python this service installs, if it has one.
+func (service *PythonEnvService) Download() (domain.PythonDownload, bool) {
+	if service.download == nil {
+		return domain.PythonDownload{}, false
+	}
+	return *service.download, true
+}
+
+// PythonInstalled tells whether the downloaded Python is in place; it looks at the disk, so call it
+// on events, not every frame.
+func (service *PythonEnvService) PythonInstalled() bool {
+	return service.download != nil && isFile(domain.DownloadedPython(service.downloadDir))
+}
+
+// InstallPython downloads the Python on its own, streaming the output into a Run.
+func (service *PythonEnvService) InstallPython() (*Run, error) {
+	if service.download == nil {
+		return nil, fmt.Errorf("%w: no download for this computer", ErrNoPython)
+	}
+	parent := filepath.Dir(service.downloadDir)
+	if err := os.MkdirAll(parent, 0o755); err != nil {
+		return nil, fmt.Errorf("making room for Python in %s: %w", parent, err)
+	}
+	script := domain.InstallScript(domain.PythonInstallSteps(*service.download, service.downloadDir)) + "echo '✓ Python instalado'\n"
+	return service.runs.StartCommand(pythonInstallRunID, Command{Name: "instalar Python", Runner: "bash", Program: "bash", Args: []string{"-c", script}, Dir: parent})
+}
+
+// LatestPythonInstall returns the last Python installation started in this session.
+func (service *PythonEnvService) LatestPythonInstall() (*Run, bool) {
+	return service.runs.Latest(pythonInstallRunID)
+}
+
+// pythonInstallRunID names the run that installs Python; there is one Python for every project.
+const pythonInstallRunID = "install-python"
 
 // Module returns the name of the module the environment must be able to import.
 func (service *PythonEnvService) Module() string { return service.module }
@@ -77,6 +113,9 @@ func (service *PythonEnvService) Setup(dir string) (*Run, error) {
 	if !isDir(dir) {
 		return nil, fmt.Errorf("cannot prepare %s: %w", dir, os.ErrNotExist)
 	}
+	if run, ok := service.LatestPythonInstall(); ok && run.Running() {
+		return nil, fmt.Errorf("%w: instalar Python", ErrAlreadyRunning)
+	}
 	python, install, err := service.pickPython()
 	if err != nil {
 		return nil, err
@@ -86,21 +125,20 @@ func (service *PythonEnvService) Setup(dir string) (*Run, error) {
 	return service.runs.StartCommand(setupRunID(dir), Command{Name: "preparar entorno", Runner: "bash", Program: "bash", Args: []string{"-c", script}, Dir: dir})
 }
 
-// pickPython chooses the Python to create the environment with: one downloaded earlier, so every
-// project keeps the same one, else the computer's own, else a fresh download, whose steps it returns.
+// pickPython chooses the Python to create the environment with: the downloaded one, with the steps
+// that fetch it when it is not there yet, or, on a computer with no download, its own.
 func (service *PythonEnvService) pickPython() (string, []domain.SetupStep, error) {
 	if service.download != nil {
-		if downloaded := domain.DownloadedPython(service.downloadDir); isFile(downloaded) {
+		downloaded := domain.DownloadedPython(service.downloadDir)
+		if isFile(downloaded) {
 			return downloaded, nil, nil
 		}
+		return downloaded, domain.PythonInstallSteps(*service.download, service.downloadDir), nil
 	}
-	if _, err := exec.LookPath(service.python); err == nil {
-		return service.python, nil, nil
-	}
-	if service.download == nil {
+	if _, err := exec.LookPath(service.python); err != nil {
 		return "", nil, fmt.Errorf("%w: %s", ErrNoPython, service.python)
 	}
-	return domain.DownloadedPython(service.downloadDir), domain.PythonInstallSteps(*service.download, service.downloadDir), nil
+	return service.python, nil, nil
 }
 
 // LatestSetup returns the last setup run started for dir in this session.
