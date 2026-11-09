@@ -49,12 +49,15 @@ No hay que instalar nada. Si al ver la cámara aparece un error de permisos USB,
 
 ## 3. Descargar Script Launcher
 
-Entra en la página de descargas:
-**[github.com/Itros97/script-launcher/releases/latest](https://github.com/Itros97/script-launcher/releases/latest)**
+La versión actual es la **v0.2.0**. Entra en su página de descargas:
+**[github.com/Itros97/script-launcher/releases/tag/v0.2.0](https://github.com/Itros97/script-launcher/releases/tag/v0.2.0)**
+
+¿Ya tenías la v0.1.0? Mira [Actualizar a la v0.2.0](#actualizar-a-la-v020) al final.
 
 **macOS**
 
-1. Descarga **ScriptLauncher-macOS.zip**. Sirve para todos los Mac (M1–M4 e Intel).
+1. Descarga **[ScriptLauncher-macOS.zip](https://github.com/Itros97/script-launcher/releases/download/v0.2.0/ScriptLauncher-macOS.zip)**.
+   Sirve para todos los Mac (con chip Apple o Intel).
 2. Abre el zip: aparece **Script Launcher**. Arrástralo a la carpeta **Aplicaciones**.
 3. La primera vez, el Mac dirá que no puede comprobar el desarrollador. Es normal: la app no está
    firmada con una cuenta de pago de Apple. Para abrirla:
@@ -64,7 +67,7 @@ Entra en la página de descargas:
 
 **Fedora**
 
-1. Descarga **script-launcher-linux-x86_64.tar.gz**.
+1. Descarga **[script-launcher-linux-x86_64.tar.gz](https://github.com/Itros97/script-launcher/releases/download/v0.2.0/script-launcher-linux-x86_64.tar.gz)**.
 2. Abre la carpeta Descargas, haz clic derecho en el archivo y elige **Extraer aquí**.
 3. Abre la **Terminal** y pega:
 
@@ -94,7 +97,9 @@ ningún `requirements.txt`: Script Launcher pone el suyo al preparar el entorno 
 4. En la tarjeta **Proyecto**, pulsa **Elegir carpeta**. Se abre un selector (sus botones están en
    inglés): pulsa **Home** a la izquierda, haz clic en **Documentos** y luego en **calibre3d** (la
    de fuera, la que tiene `prueba.sh`) para entrar en ella, y pulsa **Choose**.
-5. En la tarjeta **Entorno**, pulsa **Preparar entorno**. A la derecha verás cómo se instala todo.
+5. En la tarjeta **Entorno**, debajo del estado, pone qué archivo se va a instalar (por ejemplo
+   «Sin requirements.txt: se usará la plantilla de macOS» o «Se instalará requirements-macos.txt»).
+   Pulsa **Preparar entorno**. A la derecha verás cómo se instala todo.
    Tarda unos minutos y descarga unos 300 MB.
 6. Cuando termine, el entorno dice 🟢 **Listo**.
 
@@ -142,6 +147,26 @@ van a `datos/fotos/`.
 | En Mac, la instalación dice que no encuentra `pyrealsense2-macosx` | Esa librería necesita macOS 15 o posterior: actualiza el Mac en **Ajustes del Sistema → General → Actualización de software** y pulsa **Preparar entorno** otra vez. |
 | En un Mac con Intel, «Ver cámara» dice que no está instalado pyrealsense2 | La librería de la cámara no existe para Mac con Intel: ahí la cámara no funciona. La **Demo sin cámara** sí. |
 | La medida da avisos en naranja («Pieza lejos del centro»…) | Lee el aviso: suele bastar con centrar la pieza o repetir el plano. |
+
+## Actualizar a la v0.2.0
+
+Si ya tenías instalada la v0.1.0:
+
+- **macOS**: descarga el zip nuevo (paso 3) y arrastra **Script Launcher** a **Aplicaciones**. Si
+  pregunta, elige **Reemplazar**. Puede que tengas que volver a pulsar **Abrir igualmente**.
+- **Fedora**: descarga y extrae el archivo nuevo (paso 3) y vuelve a ejecutar `install.sh`.
+
+Tus scripts y la carpeta del proyecto se mantienen. Novedades de la v0.2.0:
+
+- **Instalar Python 3.12**: un botón en la tarjeta **Python** descarga el Python que usa Calibre3D;
+  ya no hace falta el del ordenador.
+- **Una plantilla de dependencias para cada sistema**: `requirements-linux.txt` y
+  `requirements-macos.txt`. Al preparar el entorno se instala la del ordenador; si no está, se usa
+  `requirements.txt`. Los botones **Plantilla Linux** y **Plantilla macOS** de la tarjeta
+  **Entorno** guardan cada una en la carpeta del proyecto.
+- **Si en el Mac fallaba la instalación de `pyrealsense2`** («could not find a version that
+  satisfies…»): con la v0.2.0 pulsa **Plantilla macOS** y luego **Preparar entorno**. Ya no hay que
+  tocar el `requirements.txt`.
 
 > **Nota:** la parte de macOS no se ha probado todavía en un Mac con la D405. Si algo no coincide
 > con lo que ves, apúntalo y pásalo para corregir la guía.
