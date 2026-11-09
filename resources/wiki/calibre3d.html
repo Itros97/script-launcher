@@ -11,20 +11,24 @@ folder once, press one button, and everything it needs is installed.</p>
 <ol>
 <li>Choose <strong>Calibre3D</strong> in the profile selector.</li>
 <li>Press <strong>Elegir carpeta</strong> and choose the folder of the calibre3d project (the one that holds the
-<code>calibre3d</code> package and <code>requirements.txt</code>). It is remembered.</li>
+<code>calibre3d</code> package and <code>prueba.sh</code>). It is remembered.</li>
 <li>Press <strong>Preparar entorno</strong>. The installation shows on the right, line by line.</li>
 <li>When it ends, the status turns <strong>Listo</strong>.</li>
 </ol>
 
 <h2 id="no-requirements-txt">No requirements.txt?</h2>
 
-<p>If the project has no <code>requirements.txt</code>, the <strong>Entorno</strong> card says so. <strong>Descargar plantilla de
-requirements.txt</strong> writes one into the project folder with what calibre3d needs:</p>
+<p>The project does not need one. When it has none, the <strong>Entorno</strong> card says &ldquo;Sin requirements.txt:
+se usará la plantilla&rdquo;, and <strong>Preparar entorno</strong> first writes the launcher&rsquo;s template into the
+project as <code>requirements.txt</code> and then installs it. The template works on every computer the
+launcher ships for: each camera line carries a condition, so pip installs only the one for that
+computer.</p>
 
 <table>
 <thead>
 <tr>
 <th>Package</th>
+<th>Installed on</th>
 <th>Why</th>
 </tr>
 </thead>
@@ -32,27 +36,44 @@ requirements.txt</strong> writes one into the project folder with what calibre3d
 <tbody>
 <tr>
 <td><code>numpy&gt;=1.24</code></td>
+<td>all</td>
 <td>Point clouds and depth images.</td>
 </tr>
 
 <tr>
 <td><code>scipy&gt;=1.10</code></td>
+<td>all</td>
 <td>Fitting the plane, segmenting and measuring the piece.</td>
 </tr>
 
 <tr>
 <td><code>matplotlib&gt;=3.7</code></td>
+<td>all</td>
 <td>The thickness heat maps and the views (PNG).</td>
 </tr>
 
 <tr>
 <td><code>pyrealsense2&gt;=2.55</code></td>
+<td>Linux</td>
 <td>The RealSense camera; <strong>Ver cámara</strong> and <strong>Guardar imagen</strong> need it too.</td>
+</tr>
+
+<tr>
+<td><code>pyrealsense2-macosx&gt;=2.56</code></td>
+<td>Mac with Apple silicon</td>
+<td>The same camera library. Intel publishes no macOS wheels; this community build imports the same way (<code>import pyrealsense2</code>) and needs macOS 15 or later.</td>
 </tr>
 </tbody>
 </table>
-<p>It is the calibre3d project&rsquo;s own <code>requirements.txt</code>. The button never overwrites a file: if <code>requirements.txt</code> already exists, the template is
-saved beside it as <code>requirements.plantilla.txt</code> to compare.</p>
+<p>On an Intel Mac there is no camera library, so nothing is installed for it and the rest still works
+(<strong>Demo sin cámara</strong> included). The conditions use only <code>sys_platform</code> and <code>platform_machine</code>:
+<code>platform_release</code> would make pip fail on Linux, where it is a kernel name such as <code>6.8.0-45-generic</code>
+and not a version.</p>
+
+<p>A requirements file that lists no packages (only comments or blank lines) installs nothing and
+skips pip, so it needs no internet. <strong>Descargar plantilla de requirements.txt</strong> writes the
+template without installing; it never overwrites a file: if <code>requirements.txt</code> already exists, the
+template is saved beside it as <code>requirements.plantilla.txt</code> to compare.</p>
 
 <h2 id="the-status">The status</h2>
 
@@ -134,11 +155,21 @@ starts Python once, which takes a moment.</p>
 .venv/bin/python -m pip install -r requirements.txt
 </code></pre>
 
-<p>Without a <code>requirements.txt</code> it only creates <code>.venv</code> and says there was nothing to install. An
+<p>Without a <code>requirements.txt</code> it writes the template first (see above); with one that lists no
+packages it only creates <code>.venv</code> and says there was nothing to install. An
 existing <code>.venv</code> is reused, not deleted. Pressing it again on a ready environment (<strong>Volver a
 preparar</strong>) installs whatever is missing.</p>
 
-<p>It needs <code>python3</code> with the <code>venv</code> module and, for the dependencies, an internet connection.</p>
+<p>It needs an internet connection. The <code>python3</code> it starts from is, in this order: one the launcher
+downloaded earlier, the computer&rsquo;s own (on macOS the python.org or Homebrew one; Apple&rsquo;s
+<code>/usr/bin/python3</code> does not count, since without the developer tools it only opens a dialog), or,
+when there is none, a fresh download. That download is a ready-made Python 3.12 from
+<a href="https://github.com/astral-sh/python-build-standalone" target="_blank">python-build-standalone</a> for Linux (x86-64,
+ARM) and macOS (Apple silicon, Intel): no installer and no password. Its checksum is pinned in
+<code>internal/domain/python_download.go</code>, so a damaged or altered file is refused. It is unpacked in
+<code>python-3.12.15/</code> inside the config folder (<code>~/.config/script-launcher/</code> on Linux,
+<code>~/Library/Application Support/script-launcher/</code> on macOS) and used from then on by every project.
+Delete that folder to go back to the computer&rsquo;s own Python.</p>
 
 <h2 id="calibrating-and-measuring">Calibrating and measuring</h2>
 

@@ -15,31 +15,19 @@ programar. Donde haya que escribir algo en la terminal, cópialo y pégalo tal c
 <li>La cámara <strong>Intel RealSense D405</strong> y su cable USB-C. Conéctala directamente al ordenador, sin
 hubs ni alargadores.</li>
 <li>La carpeta del proyecto <strong>calibre3d</strong> (te la pasarán en un USB o en una descarga). Es la carpeta
-que contiene <code>prueba.sh</code>, <code>requirements.txt</code> y otra carpeta llamada <code>calibre3d</code>.</li>
+que contiene <code>prueba.sh</code> y otra carpeta llamada <code>calibre3d</code>.</li>
 <li>El tapete impreso y la cámara montada a unos 133 mm sobre él (lo explica el <code>README.md</code> del
 proyecto).</li>
 </ul>
 
-<h2 id="1-instalar-python">1. Instalar Python</h2>
+<h2 id="1-python">1. Python</h2>
 
-<p>Script Launcher usa Python para hablar con la cámara y hacer las medidas.</p>
+<p>No hay que instalarlo. Script Launcher usa Python para hablar con la cámara y hacer las medidas, y si
+el ordenador no lo tiene, lo descarga él solo la primera vez que pulses <strong>Preparar entorno</strong>
+(paso 5). No pide contraseña ni abre ningún instalador.</p>
 
-<p><strong>macOS</strong></p>
-
-<ol>
-<li>Entra en <a href="https://www.python.org/downloads/" target="_blank">python.org/downloads</a> y pulsa el botón amarillo
-<strong>Download Python 3.x</strong>.</li>
-<li>Abre el archivo descargado (<code>python-3.x-macos11.pkg</code>) y pulsa <strong>Continuar</strong> hasta el final.</li>
-<li>Al terminar se abre una carpeta de Python: haz doble clic en <strong>Install Certificates.command</strong>.
-Se abre una ventana negra; cuando diga que ha terminado, ciérrala.</li>
-</ol>
-
-<p>No uses el Python que el Mac ofrece instalar con las «herramientas de desarrollo»: Script Launcher
-busca primero el de python.org.</p>
-
-<p><strong>Fedora</strong></p>
-
-<p>Ya viene instalado. No hay que hacer nada.</p>
+<p>Si en el Mac aparece una ventana que ofrece instalar las «herramientas de desarrollo», ciérrala con
+<strong>Cancelar</strong>: no hacen falta.</p>
 
 <h2 id="2-dar-permiso-para-usar-la-cámara">2. Dar permiso para usar la cámara</h2>
 
@@ -101,8 +89,8 @@ firmada con una cuenta de pago de Apple. Para abrirla:
 <p>Copia la carpeta <strong>calibre3d</strong> a tu carpeta <strong>Documentos</strong> (en Fedora, <code>Documentos</code>; en Mac,
 <code>Documentos</code> también). Así no se pierde entre las descargas.</p>
 
-<p>Dentro de esa carpeta deben verse, al menos, <code>prueba.sh</code>, <code>requirements.txt</code> y otra carpeta
-<code>calibre3d</code>.</p>
+<p>Dentro de esa carpeta deben verse, al menos, <code>prueba.sh</code> y otra carpeta <code>calibre3d</code>. No hace falta
+ningún <code>requirements.txt</code>: Script Launcher pone el suyo al preparar el entorno.</p>
 
 <h2 id="5-preparar-calibre3d-en-script-launcher">5. Preparar Calibre3D en Script Launcher</h2>
 
@@ -113,7 +101,8 @@ firmada con una cuenta de pago de Apple. Para abrirla:
 inglés): pulsa <strong>Home</strong> a la izquierda, haz clic en <strong>Documentos</strong> y luego en <strong>calibre3d</strong> (la
 de fuera, la que tiene <code>prueba.sh</code>) para entrar en ella, y pulsa <strong>Choose</strong>.</li>
 <li>En la tarjeta <strong>Entorno</strong>, pulsa <strong>Preparar entorno</strong>. A la derecha verás cómo se instala todo.
-Tarda unos minutos y descarga unos 300 MB.</li>
+Tarda unos minutos y descarga unos 300 MB. Si el ordenador no tenía Python, la primera línea dice
+«descargando Python»: es normal, solo pasa una vez.</li>
 <li>Cuando termine, el entorno dice 🟢 <strong>Listo</strong>.</li>
 </ol>
 
@@ -159,8 +148,13 @@ van a <code>datos/fotos/</code>.</p>
 
 <tbody>
 <tr>
-<td>«No encuentro python3»</td>
-<td>En Mac, instala Python desde python.org (paso 1) y vuelve a abrir Script Launcher.</td>
+<td>«La descarga de Python está dañada»</td>
+<td>Se cortó la conexión a mitad. Pulsa <strong>Preparar entorno</strong> otra vez.</td>
+</tr>
+
+<tr>
+<td>«No encuentro python3 y no puedo descargarlo»</td>
+<td>Tu ordenador no es ni un Mac ni un Linux normal de 64 bits. Instala Python 3.12 desde <a href="https://www.python.org/downloads/" target="_blank">python.org</a> y vuelve a abrir Script Launcher.</td>
 </tr>
 
 <tr>
@@ -175,7 +169,7 @@ van a <code>datos/fotos/</code>.</p>
 
 <tr>
 <td>«Incompleto» con «Falta la librería…»</td>
-<td>Pulsa <strong>Preparar entorno</strong> otra vez. Si se repite, añade la librería que dice a <code>requirements.txt</code>.</td>
+<td>Pulsa <strong>Preparar entorno</strong> otra vez. Si se repite, añade la librería que dice al <code>requirements.txt</code> que Script Launcher dejó en la carpeta del proyecto.</td>
 </tr>
 
 <tr>
@@ -194,8 +188,13 @@ van a <code>datos/fotos/</code>.</p>
 </tr>
 
 <tr>
-<td>En Mac, la instalación dice que no encuentra <code>pyrealsense2</code></td>
-<td>Por verificar en un Mac: puede que tu versión de Python aún no tenga la librería de la cámara. Avisa a quien te pasó el programa con el texto rojo de la derecha.</td>
+<td>En Mac, la instalación dice que no encuentra <code>pyrealsense2-macosx</code></td>
+<td>Esa librería necesita macOS 15 o posterior: actualiza el Mac en <strong>Ajustes del Sistema → General → Actualización de software</strong> y pulsa <strong>Preparar entorno</strong> otra vez.</td>
+</tr>
+
+<tr>
+<td>En un Mac con Intel, «Ver cámara» dice que no está instalado pyrealsense2</td>
+<td>La librería de la cámara no existe para Mac con Intel: ahí la cámara no funciona. La <strong>Demo sin cámara</strong> sí.</td>
 </tr>
 
 <tr>
