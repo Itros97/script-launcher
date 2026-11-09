@@ -26,12 +26,12 @@ type SetupStep struct {
 	Args    []string
 }
 
-// SetupPlan lists the steps that prepare a project's environment with the given Python; without a
-// requirements file there is nothing to install, and the plan says so.
+// SetupPlan lists the steps that prepare a project's environment with the given Python; when the
+// requirements file is missing or lists no packages there is nothing to install, and the plan says so.
 func SetupPlan(python string, hasRequirements bool) []SetupStep {
 	steps := []SetupStep{{Label: "Creando el entorno (" + VenvDir + ")", Program: python, Args: []string{"-m", "venv", VenvDir}}}
 	if !hasRequirements {
-		return append(steps, SetupStep{Label: "No hay " + RequirementsFile + ": no se instalan dependencias"})
+		return append(steps, SetupStep{Label: "Nada que instalar en " + RequirementsFile})
 	}
 	return append(steps,
 		SetupStep{Label: "Actualizando pip", Program: VenvPython, Args: []string{"-m", "pip", "install", "--upgrade", "pip"}},
@@ -56,6 +56,17 @@ func SetupScript(steps []SetupStep) string {
 	}
 	script.WriteString("echo " + shellQuote("✓ Entorno preparado") + "\n")
 	return script.String()
+}
+
+// ListsPackages tells whether a requirements file's content asks for anything: a line that is not
+// blank or a comment.
+func ListsPackages(requirements string) bool {
+	for _, line := range strings.Split(requirements, "\n") {
+		if line = strings.TrimSpace(line); line != "" && !strings.HasPrefix(line, "#") {
+			return true
+		}
+	}
+	return false
 }
 
 // shellQuote wraps a word in single quotes so bash reads it literally.

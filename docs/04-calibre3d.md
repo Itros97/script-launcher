@@ -10,24 +10,35 @@ folder once, press one button, and everything it needs is installed.
 
 1. Choose **Calibre3D** in the profile selector.
 2. Press **Elegir carpeta** and choose the folder of the calibre3d project (the one that holds the
-   `calibre3d` package and `requirements.txt`). It is remembered.
+   `calibre3d` package and `prueba.sh`). It is remembered.
 3. Press **Preparar entorno**. The installation shows on the right, line by line.
 4. When it ends, the status turns **Listo**.
 
 ## No requirements.txt?
 
-If the project has no `requirements.txt`, the **Entorno** card says so. **Descargar plantilla de
-requirements.txt** writes one into the project folder with what calibre3d needs:
+The project does not need one. When it has none, the **Entorno** card says "Sin requirements.txt:
+se usará la plantilla", and **Preparar entorno** first writes the launcher's template into the
+project as `requirements.txt` and then installs it. The template works on every computer the
+launcher ships for: each camera line carries a condition, so pip installs only the one for that
+computer.
 
-| Package | Why |
-|---|---|
-| `numpy>=1.24` | Point clouds and depth images. |
-| `scipy>=1.10` | Fitting the plane, segmenting and measuring the piece. |
-| `matplotlib>=3.7` | The thickness heat maps and the views (PNG). |
-| `pyrealsense2>=2.55` | The RealSense camera; **Ver cámara** and **Guardar imagen** need it too. |
+| Package | Installed on | Why |
+|---|---|---|
+| `numpy>=1.24` | all | Point clouds and depth images. |
+| `scipy>=1.10` | all | Fitting the plane, segmenting and measuring the piece. |
+| `matplotlib>=3.7` | all | The thickness heat maps and the views (PNG). |
+| `pyrealsense2>=2.55` | Linux | The RealSense camera; **Ver cámara** and **Guardar imagen** need it too. |
+| `pyrealsense2-macosx>=2.56` | Mac with Apple silicon | The same camera library. Intel publishes no macOS wheels; this community build imports the same way (`import pyrealsense2`) and needs macOS 15 or later. |
 
-It is the calibre3d project's own `requirements.txt`. The button never overwrites a file: if `requirements.txt` already exists, the template is
-saved beside it as `requirements.plantilla.txt` to compare.
+On an Intel Mac there is no camera library, so nothing is installed for it and the rest still works
+(**Demo sin cámara** included). The conditions use only `sys_platform` and `platform_machine`:
+`platform_release` would make pip fail on Linux, where it is a kernel name such as `6.8.0-45-generic`
+and not a version.
+
+A requirements file that lists no packages (only comments or blank lines) installs nothing and
+skips pip, so it needs no internet. **Descargar plantilla de requirements.txt** writes the
+template without installing; it never overwrites a file: if `requirements.txt` already exists, the
+template is saved beside it as `requirements.plantilla.txt` to compare.
 
 ## The status
 
@@ -61,11 +72,21 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-Without a `requirements.txt` it only creates `.venv` and says there was nothing to install. An
+Without a `requirements.txt` it writes the template first (see above); with one that lists no
+packages it only creates `.venv` and says there was nothing to install. An
 existing `.venv` is reused, not deleted. Pressing it again on a ready environment (**Volver a
 preparar**) installs whatever is missing.
 
-It needs `python3` with the `venv` module and, for the dependencies, an internet connection.
+It needs an internet connection. The `python3` it starts from is, in this order: one the launcher
+downloaded earlier, the computer's own (on macOS the python.org or Homebrew one; Apple's
+`/usr/bin/python3` does not count, since without the developer tools it only opens a dialog), or,
+when there is none, a fresh download. That download is a ready-made Python 3.12 from
+[python-build-standalone](https://github.com/astral-sh/python-build-standalone) for Linux (x86-64,
+ARM) and macOS (Apple silicon, Intel): no installer and no password. Its checksum is pinned in
+`internal/domain/python_download.go`, so a damaged or altered file is refused. It is unpacked in
+`python-3.12.15/` inside the config folder (`~/.config/script-launcher/` on Linux,
+`~/Library/Application Support/script-launcher/` on macOS) and used from then on by every project.
+Delete that folder to go back to the computer's own Python.
 
 ## Calibrating and measuring
 

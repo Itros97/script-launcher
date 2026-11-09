@@ -1,6 +1,7 @@
 package views
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"slices"
@@ -8,9 +9,25 @@ import (
 	"testing"
 
 	"github.com/Itros97/script-launcher/internal/domain"
+	"github.com/Itros97/script-launcher/internal/services/templates"
 )
 
-const missingRequirements = "Falta requirements.txt: descarga la plantilla."
+const missingRequirements = "Sin requirements.txt: se usará la plantilla."
+
+func TestSetupWithoutRequirementsInstallsTheTemplate(t *testing.T) {
+	project := calibreProject(t)
+	app := openCalibre(t, project)
+	waitForText(t, app.window, missingRequirements)
+	click(t, app.window, "Preparar entorno")
+	waitForText(t, app.window, "Preparando…")
+	content, err := os.ReadFile(filepath.Join(project, domain.RequirementsFile))
+	if err != nil || !bytes.Equal(content, templates.Requirements) {
+		t.Errorf("requirements.txt is not the template: %v", err)
+	}
+	if slices.Contains(app.window.Texts(), missingRequirements) {
+		t.Error("the missing requirements hint is still shown")
+	}
+}
 
 func TestTemplateButtonWritesTheRequirementsAndClearsTheHint(t *testing.T) {
 	project := calibreProject(t)

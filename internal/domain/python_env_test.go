@@ -41,3 +41,12 @@ func TestSetupScriptKeepsArgumentsLiteral(t *testing.T) {
 		t.Errorf("got %q", output)
 	}
 }
+
+func TestListsPackagesIgnoresBlankLinesAndComments(t *testing.T) {
+	if ListsPackages("") || ListsPackages("# nada\n\n   # tampoco\n") {
+		t.Error("an empty requirements file asks for packages")
+	}
+	if !ListsPackages("# cámara\nnumpy>=1.24\n") {
+		t.Error("numpy was not seen")
+	}
+}

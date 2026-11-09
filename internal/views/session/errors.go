@@ -22,7 +22,7 @@ func Describe(err error) string {
 	case errors.Is(err, services.ErrNotAFile):
 		return "Eso no es un archivo."
 	case errors.Is(err, services.ErrNoPython):
-		return "No encuentro python3. Instálalo y vuelve a intentarlo."
+		return "No encuentro python3 y no puedo descargarlo para este ordenador. Instálalo y vuelve a intentarlo."
 	case errors.Is(err, domain.ErrEmptyAlias):
 		return "Escribe un nombre."
 	case errors.Is(err, domain.ErrInvalidAlias):

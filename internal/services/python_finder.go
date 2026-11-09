@@ -5,6 +5,10 @@ import (
 	"os/exec"
 )
 
+// macStandIn is Apple's python3 in PATH: without the developer tools it only opens a dialog
+// offering to install them, so on macOS the launcher downloads its own Python instead.
+const macStandIn = "/usr/bin/python3"
+
 // macPythons are where the python.org installer and Homebrew put python3. They are tried before
 // PATH because an app opened from the Finder gets a short PATH whose python3 is Apple's stand-in,
 // which only offers to install the developer tools.
@@ -15,8 +19,8 @@ var macPythons = []string{
 }
 
 // FindPython returns the python3 to create environments with on the system goos: on macOS the
-// first installed one of macPythons, elsewhere (or when none is) the one in PATH, or "python3" so
-// the error names what is missing.
+// first installed one of macPythons, elsewhere (or when none is) the one in PATH except Apple's
+// stand-in, or "python3" when there is none.
 func FindPython(goos string, exists func(path string) bool, lookPath func(name string) (string, error)) string {
 	if goos == "darwin" {
 		for _, path := range macPythons {
@@ -25,7 +29,7 @@ func FindPython(goos string, exists func(path string) bool, lookPath func(name s
 			}
 		}
 	}
-	if path, err := lookPath("python3"); err == nil {
+	if path, err := lookPath("python3"); err == nil && !(goos == "darwin" && path == macStandIn) {
 		return path
 	}
 	return "python3"

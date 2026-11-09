@@ -51,3 +51,11 @@ func TestTemplateListsTheCameraLibrary(t *testing.T) {
 		t.Error("the template must install pyrealsense2, which the photo capture needs")
 	}
 }
+
+func TestTemplateInstallsTheCameraLibraryOnLinuxAndOnMac(t *testing.T) {
+	for _, line := range []string{`pyrealsense2>=2.55; sys_platform != "darwin"`, `pyrealsense2-macosx>=2.56; sys_platform == "darwin" and platform_machine == "arm64"`} {
+		if !bytes.Contains(templates.Requirements, []byte(line+"\n")) {
+			t.Errorf("the template lacks %q", line)
+		}
+	}
+}

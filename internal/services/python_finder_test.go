@@ -39,7 +39,13 @@ func TestOnMacHomebrewIsUsedWithoutThePythonOrgInstall(t *testing.T) {
 }
 
 func TestOnMacWithoutAnInstallPathIsUsed(t *testing.T) {
-	if python := FindPython("darwin", installed(), fakeLookPath("/usr/bin/python3")); python != "/usr/bin/python3" {
+	if python := FindPython("darwin", installed(), fakeLookPath("/opt/local/bin/python3")); python != "/opt/local/bin/python3" {
+		t.Errorf("got %s", python)
+	}
+}
+
+func TestOnMacApplesStandInCountsAsNoPython(t *testing.T) {
+	if python := FindPython("darwin", installed(), fakeLookPath("/usr/bin/python3")); python != "python3" {
 		t.Errorf("got %s", python)
 	}
 }

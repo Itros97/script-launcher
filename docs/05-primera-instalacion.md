@@ -14,28 +14,18 @@ Sigue solo los pasos de tu sistema: **macOS** (un Mac) o **Fedora** (Linux).
 - La cámara **Intel RealSense D405** y su cable USB-C. Conéctala directamente al ordenador, sin
   hubs ni alargadores.
 - La carpeta del proyecto **calibre3d** (te la pasarán en un USB o en una descarga). Es la carpeta
-  que contiene `prueba.sh`, `requirements.txt` y otra carpeta llamada `calibre3d`.
+  que contiene `prueba.sh` y otra carpeta llamada `calibre3d`.
 - El tapete impreso y la cámara montada a unos 133 mm sobre él (lo explica el `README.md` del
   proyecto).
 
-## 1. Instalar Python
+## 1. Python
 
-Script Launcher usa Python para hablar con la cámara y hacer las medidas.
+No hay que instalarlo. Script Launcher usa Python para hablar con la cámara y hacer las medidas, y si
+el ordenador no lo tiene, lo descarga él solo la primera vez que pulses **Preparar entorno**
+(paso 5). No pide contraseña ni abre ningún instalador.
 
-**macOS**
-
-1. Entra en [python.org/downloads](https://www.python.org/downloads/) y pulsa el botón amarillo
-   **Download Python 3.x**.
-2. Abre el archivo descargado (`python-3.x-macos11.pkg`) y pulsa **Continuar** hasta el final.
-3. Al terminar se abre una carpeta de Python: haz doble clic en **Install Certificates.command**.
-   Se abre una ventana negra; cuando diga que ha terminado, ciérrala.
-
-No uses el Python que el Mac ofrece instalar con las «herramientas de desarrollo»: Script Launcher
-busca primero el de python.org.
-
-**Fedora**
-
-Ya viene instalado. No hay que hacer nada.
+Si en el Mac aparece una ventana que ofrece instalar las «herramientas de desarrollo», ciérrala con
+**Cancelar**: no hacen falta.
 
 ## 2. Dar permiso para usar la cámara
 
@@ -91,8 +81,8 @@ Entra en la página de descargas:
 Copia la carpeta **calibre3d** a tu carpeta **Documentos** (en Fedora, `Documentos`; en Mac,
 `Documentos` también). Así no se pierde entre las descargas.
 
-Dentro de esa carpeta deben verse, al menos, `prueba.sh`, `requirements.txt` y otra carpeta
-`calibre3d`.
+Dentro de esa carpeta deben verse, al menos, `prueba.sh` y otra carpeta `calibre3d`. No hace falta
+ningún `requirements.txt`: Script Launcher pone el suyo al preparar el entorno.
 
 ## 5. Preparar Calibre3D en Script Launcher
 
@@ -102,7 +92,8 @@ Dentro de esa carpeta deben verse, al menos, `prueba.sh`, `requirements.txt` y o
    inglés): pulsa **Home** a la izquierda, haz clic en **Documentos** y luego en **calibre3d** (la
    de fuera, la que tiene `prueba.sh`) para entrar en ella, y pulsa **Choose**.
 4. En la tarjeta **Entorno**, pulsa **Preparar entorno**. A la derecha verás cómo se instala todo.
-   Tarda unos minutos y descarga unos 300 MB.
+   Tarda unos minutos y descarga unos 300 MB. Si el ordenador no tenía Python, la primera línea dice
+   «descargando Python»: es normal, solo pasa una vez.
 5. Cuando termine, el entorno dice 🟢 **Listo**.
 
 ## 6. Comprobar que todo funciona
@@ -135,14 +126,16 @@ van a `datos/fotos/`.
 
 | Lo que ves | Qué hacer |
 |---|---|
-| «No encuentro python3» | En Mac, instala Python desde python.org (paso 1) y vuelve a abrir Script Launcher. |
+| «La descarga de Python está dañada» | Se cortó la conexión a mitad. Pulsa **Preparar entorno** otra vez. |
+| «No encuentro python3 y no puedo descargarlo» | Tu ordenador no es ni un Mac ni un Linux normal de 64 bits. Instala Python 3.12 desde [python.org](https://www.python.org/downloads/) y vuelve a abrir Script Launcher. |
 | «Sin proyecto» o «En esta carpeta no está el programa calibre3d» | Pulsa **Elegir carpeta**, entra en la carpeta calibre3d de fuera (la que tiene `prueba.sh`) y pulsa **Choose**. |
 | «Esta carpeta tiene prueba.sh pero le falta la carpeta calibre3d/» | Falta parte del proyecto: vuelve a copiar la carpeta completa. |
-| «Incompleto» con «Falta la librería…» | Pulsa **Preparar entorno** otra vez. Si se repite, añade la librería que dice a `requirements.txt`. |
+| «Incompleto» con «Falta la librería…» | Pulsa **Preparar entorno** otra vez. Si se repite, añade la librería que dice al `requirements.txt` que Script Launcher dejó en la carpeta del proyecto. |
 | La instalación falla con errores de red | Comprueba la conexión a internet y pulsa **Preparar entorno** otra vez. |
 | «No se encuentra ninguna RealSense conectada» | Conecta la cámara directamente al ordenador, sin hub. En Fedora, repite el paso 2 y reconecta la cámara. |
 | En Mac, un error de permisos USB al usar la cámara | Por verificar en un Mac: en algunas versiones de macOS la librería de la cámara necesita permisos de administrador. Avisa a quien te pasó el programa. |
-| En Mac, la instalación dice que no encuentra `pyrealsense2` | Por verificar en un Mac: puede que tu versión de Python aún no tenga la librería de la cámara. Avisa a quien te pasó el programa con el texto rojo de la derecha. |
+| En Mac, la instalación dice que no encuentra `pyrealsense2-macosx` | Esa librería necesita macOS 15 o posterior: actualiza el Mac en **Ajustes del Sistema → General → Actualización de software** y pulsa **Preparar entorno** otra vez. |
+| En un Mac con Intel, «Ver cámara» dice que no está instalado pyrealsense2 | La librería de la cámara no existe para Mac con Intel: ahí la cámara no funciona. La **Demo sin cámara** sí. |
 | La medida da avisos en naranja («Pieza lejos del centro»…) | Lee el aviso: suele bastar con centrar la pieza o repetir el plano. |
 
 > **Nota:** la parte de macOS no se ha probado todavía en un Mac con la D405. Si algo no coincide

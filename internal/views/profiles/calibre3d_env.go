@@ -30,14 +30,14 @@ func (profile *Calibre3D) drawEnvCard(context *ui.Context, current *session.Sess
 			return
 		}
 		if !profile.hasReqs {
-			missing := "Falta " + domain.RequirementsFile + ": descarga la plantilla."
-			context.Text(missing, ui.TextStyle{Size: context.Theme.SmallTextSize, Color: context.Theme.Warning})
+			missing := "Sin " + domain.RequirementsFile + ": se usará la plantilla."
+			context.Text(missing, ui.TextStyle{Size: context.Theme.SmallTextSize, Color: context.Theme.InkSoft})
 		}
 		context.Row(func() {
 			if profile.setupButton(context) {
 				profile.setup(current)
 			}
-			context.Tooltip("Crea .venv e instala requirements.txt")
+			context.Tooltip("Crea .venv e instala requirements.txt (o la plantilla, si no hay)")
 			if context.IconButton("refresh-cw", "Comprobar") {
 				profile.check(current)
 			}
@@ -96,8 +96,16 @@ func (profile *Calibre3D) saveTemplate(current *session.Session) {
 	profile.check(current)
 }
 
-// setup starts preparing the environment and follows it on the right.
+// setup starts preparing the environment and follows it on the right; a project without a
+// requirements.txt gets the template first, so everything calibre3d needs is installed.
 func (profile *Calibre3D) setup(current *session.Session) {
+	if !profile.hasReqs {
+		if _, err := services.SaveRequirementsTemplate(profile.project); err != nil {
+			current.Warn(err)
+			return
+		}
+		profile.hasReqs = true
+	}
 	run, err := profile.Env.Setup(profile.project)
 	if err != nil {
 		current.Warn(err)

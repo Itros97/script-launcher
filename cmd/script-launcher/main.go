@@ -46,6 +46,9 @@ func run() error {
 		return err
 	}
 	env := services.NewPythonEnvService(service, services.SystemPython(runtime.GOOS), "calibre3d")
+	if download, ok := domain.PythonDownloadFor(runtime.GOOS, runtime.GOARCH); ok {
+		env.WithDownload(download, filepath.Join(*configDir, "python-"+download.Version))
+	}
 	preview := services.NewPreviewService(cacheDir(), window.Wake)
 	camera := services.NewCaptureService(service, preview, cacheDir())
 	calibre, err := profiles.NewCalibre3D(profiles.Calibre3DServices{

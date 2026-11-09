@@ -69,6 +69,10 @@ func TestARunningScriptKeepsRunningAcrossProfiles(t *testing.T) {
 
 func TestCalibre3DPreparesTheEnvironmentInOneClick(t *testing.T) {
 	project := calibreProject(t)
+	// No packages, so the test needs no internet.
+	if err := os.WriteFile(filepath.Join(project, domain.RequirementsFile), []byte("# nada que instalar\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
 	app := openApp(t, data.Settings{Profile: domain.Calibre3DProfileID, Calibre3DProject: project})
 	waitForText(t, app.window, "Sin entorno")
 	click(t, app.window, "Preparar entorno")

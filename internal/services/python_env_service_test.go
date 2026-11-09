@@ -1,8 +1,11 @@
 package services
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -82,5 +85,68 @@ func TestSetupFailsClearlyWithoutPython(t *testing.T) {
 	_, err := newEnvService("python-that-does-not-exist").Setup(fakeProject(t))
 	if !errors.Is(err, ErrNoPython) {
 		t.Errorf("got %v, want ErrNoPython", err)
+	}
+}
+
+// fakePythonDownload packs a python/bin/python3 that hands over to the real python3, so the
+// environment it creates works.
+func fakePythonDownload(t *testing.T) domain.PythonDownload {
+	t.Helper()
+	src := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(src, "python", "bin"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(src, "python", "bin", "python3"), []byte("#!/bin/sh\nexec python3 \"$@\"\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	archive := filepath.Join(t.TempDir(), "python.tar.gz")
+	if output, err := exec.Command("tar", "-czf", archive, "-C", src, "python").CombinedOutput(); err != nil {
+		t.Fatalf("%v: %s", err, output)
+	}
+	content, err := os.ReadFile(archive)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(content)
+	return domain.PythonDownload{Version: "3.12.0", URL: "file://" + archive, SHA256: hex.EncodeToString(sum[:]), SizeMB: 1}
+}
+
+func TestSetupDownloadsPythonWhenTheComputerHasNone(t *testing.T) {
+	pythonDir := filepath.Join(t.TempDir(), "python-3.12.0")
+	service := newEnvService("python-that-does-not-exist").WithDownload(fakePythonDownload(t), pythonDir)
+	dir := fakeProject(t)
+	run, err := service.Setup(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot := waitFor(t, run)
+	if snapshot.Status != Succeeded {
+		t.Fatalf("setup failed: %+v", snapshot.Lines)
+	}
+	if !strings.Contains(snapshot.Lines[0].Text, "descargando Python 3.12.0") {
+		t.Errorf("first line: %q", snapshot.Lines[0].Text)
+	}
+	if status := checkStatus(t, service, dir); status != domain.Ready {
+		t.Errorf("got %d, want Ready", status)
+	}
+}
+
+func TestSetupKeepsUsingADownloadedPython(t *testing.T) {
+	pythonDir := t.TempDir()
+	if err := os.MkdirAll(filepath.Dir(domain.DownloadedPython(pythonDir)), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(domain.DownloadedPython(pythonDir), []byte("#!/bin/sh\nexec python3 \"$@\"\n"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	download := domain.PythonDownload{Version: "3.12.0", URL: "file:///nowhere", SHA256: strings.Repeat("0", 64)}
+	service := newEnvService("python3").WithDownload(download, pythonDir)
+	run, err := service.Setup(fakeProject(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot := waitFor(t, run)
+	if snapshot.Status != Succeeded || strings.Contains(snapshot.Lines[0].Text, "descargando") {
+		t.Errorf("got %+v", snapshot.Lines)
 	}
 }
