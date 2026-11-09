@@ -16,19 +16,31 @@ folder once, press one button, and everything it needs is installed.</p>
 <li>When it ends, the status turns <strong>Listo</strong>.</li>
 </ol>
 
-<h2 id="no-requirements-txt">No requirements.txt?</h2>
+<h2 id="which-requirements-file-is-installed">Which requirements file is installed</h2>
 
-<p>The project does not need one. When it has none, the <strong>Entorno</strong> card says &ldquo;Sin requirements.txt:
-se usará la plantilla&rdquo;, and <strong>Preparar entorno</strong> first writes the launcher&rsquo;s template into the
-project as <code>requirements.txt</code> and then installs it. The template works on every computer the
-launcher ships for: each camera line carries a condition, so pip installs only the one for that
-computer.</p>
+<p>The camera library has a different name on each computer, so there is one requirements file per
+platform. <strong>Preparar entorno</strong> installs the first of these the project has:</p>
+
+<ol>
+<li>This computer&rsquo;s own file: <code>requirements-macos.txt</code> on a Mac, <code>requirements-linux.txt</code> anywhere
+else.</li>
+<li><code>requirements.txt</code>.</li>
+</ol>
+
+<p>The <strong>Entorno</strong> card says which one (&ldquo;Se instalará requirements-macos.txt.&rdquo;). A project can carry
+both platform files and work on both computers; an old <code>requirements.txt</code> that only works on Linux
+is then ignored on the Mac without touching it.</p>
+
+<p>When the project has none, the card says &ldquo;Sin requirements.txt: se usará la plantilla de macOS&rdquo; (or
+Linux), and <strong>Preparar entorno</strong> first writes that computer&rsquo;s template into the project and then
+installs it.</p>
 
 <table>
 <thead>
 <tr>
 <th>Package</th>
-<th>Installed on</th>
+<th><code>requirements-linux.txt</code></th>
+<th><code>requirements-macos.txt</code></th>
 <th>Why</th>
 </tr>
 </thead>
@@ -36,44 +48,47 @@ computer.</p>
 <tbody>
 <tr>
 <td><code>numpy&gt;=1.24</code></td>
-<td>all</td>
+<td>✓</td>
+<td>✓</td>
 <td>Point clouds and depth images.</td>
 </tr>
 
 <tr>
 <td><code>scipy&gt;=1.10</code></td>
-<td>all</td>
+<td>✓</td>
+<td>✓</td>
 <td>Fitting the plane, segmenting and measuring the piece.</td>
 </tr>
 
 <tr>
 <td><code>matplotlib&gt;=3.7</code></td>
-<td>all</td>
+<td>✓</td>
+<td>✓</td>
 <td>The thickness heat maps and the views (PNG).</td>
 </tr>
 
 <tr>
 <td><code>pyrealsense2&gt;=2.55</code></td>
-<td>Linux</td>
+<td>✓</td>
+<td></td>
 <td>The RealSense camera; <strong>Ver cámara</strong> and <strong>Guardar imagen</strong> need it too.</td>
 </tr>
 
 <tr>
 <td><code>pyrealsense2-macosx&gt;=2.56</code></td>
-<td>Mac with Apple silicon</td>
-<td>The same camera library. Intel publishes no macOS wheels; this community build imports the same way (<code>import pyrealsense2</code>) and needs macOS 15 or later.</td>
+<td></td>
+<td>✓ (Apple silicon only)</td>
+<td>The same camera library. Intel publishes no macOS wheels, so <code>pyrealsense2</code> cannot be installed on a Mac at all; this community build imports the same way (<code>import pyrealsense2</code>) and needs macOS 15 or later.</td>
 </tr>
 </tbody>
 </table>
-<p>On an Intel Mac there is no camera library, so nothing is installed for it and the rest still works
-(<strong>Demo sin cámara</strong> included). The conditions use only <code>sys_platform</code> and <code>platform_machine</code>:
-<code>platform_release</code> would make pip fail on Linux, where it is a kernel name such as <code>6.8.0-45-generic</code>
-and not a version.</p>
+<p>On an Intel Mac the camera line&rsquo;s condition (<code>platform_machine == &quot;arm64&quot;</code>) skips it, and the rest
+still works (<strong>Demo sin cámara</strong> included).</p>
 
 <p>A requirements file that lists no packages (only comments or blank lines) installs nothing and
-skips pip, so it needs no internet. <strong>Descargar plantilla de requirements.txt</strong> writes the
-template without installing; it never overwrites a file: if <code>requirements.txt</code> already exists, the
-template is saved beside it as <code>requirements.plantilla.txt</code> to compare.</p>
+skips pip, so it needs no internet. The <strong>Plantilla Linux</strong> and <strong>Plantilla macOS</strong> buttons write
+those templates into the project without installing, to add to the project&rsquo;s repository or to
+compare. They never overwrite a file: if it already exists they say so and leave it as it is.</p>
 
 <h2 id="the-status">The status</h2>
 
@@ -152,10 +167,10 @@ starts Python once, which takes a moment.</p>
 <p>In the project folder, one after the other, stopping at the first that fails:</p>
 <pre><code class="language-bash">python3 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -r requirements-macos.txt   <span class="c1"># or -linux, or requirements.txt</span>
 </code></pre>
 
-<p>Without a <code>requirements.txt</code> it writes the template first (see above); with one that lists no
+<p>The file is picked as described above; without any it writes the template first. With one that lists no
 packages it only creates <code>.venv</code> and says there was nothing to install. An
 existing <code>.venv</code> is reused, not deleted. Pressing it again on a ready environment (<strong>Volver a
 preparar</strong>) installs whatever is missing.</p>

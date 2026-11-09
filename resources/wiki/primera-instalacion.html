@@ -89,7 +89,8 @@ firmada con una cuenta de pago de Apple. Para abrirla:
 <code>Documentos</code> también). Así no se pierde entre las descargas.</p>
 
 <p>Dentro de esa carpeta deben verse, al menos, <code>prueba.sh</code> y otra carpeta <code>calibre3d</code>. No hace falta
-ningún <code>requirements.txt</code>: Script Launcher pone el suyo al preparar el entorno.</p>
+ningún <code>requirements.txt</code>: Script Launcher pone el suyo al preparar el entorno (en Mac,
+<code>requirements-macos.txt</code>; en Linux, <code>requirements-linux.txt</code>).</p>
 
 <h2 id="5-preparar-calibre3d-en-script-launcher">5. Preparar Calibre3D en Script Launcher</h2>
 
@@ -172,7 +173,12 @@ van a <code>datos/fotos/</code>.</p>
 
 <tr>
 <td>«Incompleto» con «Falta la librería…»</td>
-<td>Pulsa <strong>Preparar entorno</strong> otra vez. Si se repite, añade la librería que dice al <code>requirements.txt</code> que Script Launcher dejó en la carpeta del proyecto.</td>
+<td>Pulsa <strong>Preparar entorno</strong> otra vez. Si se repite, añade la librería que dice al archivo que pone «Se instalará…» en la tarjeta <strong>Entorno</strong> (por ejemplo <code>requirements-macos.txt</code>).</td>
+</tr>
+
+<tr>
+<td>En Mac, la instalación dice que no encuentra una versión de <code>pyrealsense2</code></td>
+<td>El proyecto tiene un <code>requirements.txt</code> antiguo, solo para Linux. Pulsa <strong>Plantilla macOS</strong> y luego <strong>Preparar entorno</strong>: a partir de ahí se instala <code>requirements-macos.txt</code> y el otro se deja tal cual.</td>
 </tr>
 
 <tr>
