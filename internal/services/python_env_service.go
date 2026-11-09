@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/Itros97/script-launcher/internal/domain"
@@ -24,13 +25,24 @@ type PythonEnvService struct {
 	runs        *RunService
 	python      string
 	module      string
+	platform    domain.Platform        // picks which requirements file is installed
 	download    *domain.PythonDownload // fetched into downloadDir when python is not installed
 	downloadDir string
 }
 
 // NewPythonEnvService builds a service that creates environments with python and checks them by importing module.
 func NewPythonEnvService(runs *RunService, python, module string) *PythonEnvService {
-	return &PythonEnvService{runs: runs, python: python, module: module}
+	return &PythonEnvService{runs: runs, python: python, module: module, platform: domain.PlatformFor(runtime.GOOS)}
+}
+
+// Platform returns the computer family whose requirements file this service installs.
+func (service *PythonEnvService) Platform() domain.Platform { return service.platform }
+
+// Requirements returns the requirements file Setup installs from dir: this computer's own, such as
+// requirements-macos.txt, when the project has it, requirements.txt otherwise, and "" when neither
+// exists. It looks at the disk, so call it on events, not every frame.
+func (service *PythonEnvService) Requirements(dir string) string {
+	return domain.RequirementsFor(service.platform, func(name string) bool { return isFile(filepath.Join(dir, name)) })
 }
 
 // WithDownload makes the downloaded Python the one environments are created with: InstallPython
@@ -120,8 +132,9 @@ func (service *PythonEnvService) Setup(dir string) (*Run, error) {
 	if err != nil {
 		return nil, err
 	}
-	requirements, _ := os.ReadFile(filepath.Join(dir, domain.RequirementsFile)) // missing reads as empty
-	script := domain.SetupScript(append(install, domain.SetupPlan(python, domain.ListsPackages(string(requirements)))...))
+	requirements := service.Requirements(dir)
+	content, _ := os.ReadFile(filepath.Join(dir, requirements)) // none reads as empty
+	script := domain.SetupScript(append(install, domain.SetupPlan(python, requirements, domain.ListsPackages(string(content)))...))
 	return service.runs.StartCommand(setupRunID(dir), Command{Name: "preparar entorno", Runner: "bash", Program: "bash", Args: []string{"-c", script}, Dir: dir})
 }
 

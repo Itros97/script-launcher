@@ -1,0 +1,16 @@
+# Dependencias de calibre3d en Linux para «Preparar entorno».
+# Una por línea. Añade aquí cualquier otra librería que use tu proyecto.
+# En un Mac se usa requirements-macos.txt en su lugar.
+
+# Cálculo con las nubes de puntos y las imágenes de profundidad.
+numpy>=1.24
+
+# Ajuste del plano, segmentación y geometría de la pieza.
+scipy>=1.10
+
+# Mapas de calor del espesor y vistas de la pieza (PNG).
+matplotlib>=3.7
+
+# Cámara RealSense: la librería oficial de Intel. La usan calibre3d y los botones
+# «Ver cámara» y «Guardar imagen».
+pyrealsense2>=2.55

@@ -1,7 +1,6 @@
 package profiles
 
 import (
-	"os"
 	"path/filepath"
 
 	"github.com/akrck02/go-renderer/draw2d"
@@ -29,23 +28,28 @@ func (profile *Calibre3D) drawEnvCard(context *ui.Context, current *session.Sess
 		if profile.status == domain.NoProject || running || profile.pythonInstalling() {
 			return
 		}
-		if !profile.hasReqs {
-			missing := "Sin " + domain.RequirementsFile + ": se usará la plantilla."
-			context.Text(missing, ui.TextStyle{Size: context.Theme.SmallTextSize, Color: context.Theme.InkSoft})
+		which := "Se instalará " + profile.reqs + "."
+		if profile.reqs == "" {
+			which = "Sin " + domain.RequirementsFile + ": se usará la plantilla de " + profile.Env.Platform().Name() + "."
 		}
+		context.Text(which, ui.TextStyle{Size: context.Theme.SmallTextSize, Color: context.Theme.InkSoft})
 		context.Row(func() {
 			if profile.setupButton(context) {
 				profile.setup(current)
 			}
-			context.Tooltip("Crea .venv e instala requirements.txt (o la plantilla, si no hay)")
+			context.Tooltip("Crea .venv e instala " + profile.Env.Platform().RequirementsFile() + " o, si no está, requirements.txt (o la plantilla, si no hay ninguno)")
 			if context.IconButton("refresh-cw", "Comprobar") {
 				profile.check(current)
 			}
 		})
-		if context.FlatIconButton("file-down", "Descargar plantilla de requirements.txt") {
-			profile.saveTemplate(current)
-		}
-		context.Tooltip("Guarda en la carpeta del proyecto un requirements.txt con lo que necesita calibre3d")
+		context.Row(func() {
+			for _, system := range domain.Platforms {
+				if context.FlatIconButton("file-down", "Plantilla "+system.Name()) {
+					profile.saveTemplate(current, system)
+				}
+				context.Tooltip("Guarda en la carpeta del proyecto " + system.RequirementsFile() + " con lo que necesita calibre3d en " + system.Name())
+			}
+		})
 	})
 }
 
@@ -85,16 +89,15 @@ func (profile *Calibre3D) check(current *session.Session) {
 	result, err := profile.Env.Check(profile.project)
 	profile.status, profile.reason = result.Status, result.Reason
 	profile.pythonReady = profile.Env.PythonInstalled()
-	_, missing := os.Stat(filepath.Join(profile.project, domain.RequirementsFile))
-	profile.hasReqs = missing == nil
+	profile.reqs = profile.Env.Requirements(profile.project)
 	if err != nil {
 		current.Warn(err)
 	}
 }
 
-// saveTemplate writes the requirements template into the project, never over an existing file.
-func (profile *Calibre3D) saveTemplate(current *session.Session) {
-	path, err := services.SaveRequirementsTemplate(profile.project)
+// saveTemplate writes system's requirements template into the project, never over an existing file.
+func (profile *Calibre3D) saveTemplate(current *session.Session, system domain.Platform) {
+	path, err := services.SaveRequirementsTemplate(profile.project, system)
 	if err != nil {
 		current.Warn(err)
 		return
@@ -104,14 +107,15 @@ func (profile *Calibre3D) saveTemplate(current *session.Session) {
 }
 
 // setup starts preparing the environment and follows it on the right; a project without a
-// requirements.txt gets the template first, so everything calibre3d needs is installed.
+// requirements file gets this computer's template first, so everything calibre3d needs is installed.
 func (profile *Calibre3D) setup(current *session.Session) {
-	if !profile.hasReqs {
-		if _, err := services.SaveRequirementsTemplate(profile.project); err != nil {
+	if profile.reqs == "" {
+		path, err := services.SaveRequirementsTemplate(profile.project, profile.Env.Platform())
+		if err != nil {
 			current.Warn(err)
 			return
 		}
-		profile.hasReqs = true
+		profile.reqs = filepath.Base(path)
 	}
 	run, err := profile.Env.Setup(profile.project)
 	if err != nil {

@@ -14,31 +14,38 @@ folder once, press one button, and everything it needs is installed.
 3. Press **Preparar entorno**. The installation shows on the right, line by line.
 4. When it ends, the status turns **Listo**.
 
-## No requirements.txt?
+## Which requirements file is installed
 
-The project does not need one. When it has none, the **Entorno** card says "Sin requirements.txt:
-se usará la plantilla", and **Preparar entorno** first writes the launcher's template into the
-project as `requirements.txt` and then installs it. The template works on every computer the
-launcher ships for: each camera line carries a condition, so pip installs only the one for that
-computer.
+The camera library has a different name on each computer, so there is one requirements file per
+platform. **Preparar entorno** installs the first of these the project has:
 
-| Package | Installed on | Why |
-|---|---|---|
-| `numpy>=1.24` | all | Point clouds and depth images. |
-| `scipy>=1.10` | all | Fitting the plane, segmenting and measuring the piece. |
-| `matplotlib>=3.7` | all | The thickness heat maps and the views (PNG). |
-| `pyrealsense2>=2.55` | Linux | The RealSense camera; **Ver cámara** and **Guardar imagen** need it too. |
-| `pyrealsense2-macosx>=2.56` | Mac with Apple silicon | The same camera library. Intel publishes no macOS wheels; this community build imports the same way (`import pyrealsense2`) and needs macOS 15 or later. |
+1. This computer's own file: `requirements-macos.txt` on a Mac, `requirements-linux.txt` anywhere
+   else.
+2. `requirements.txt`.
 
-On an Intel Mac there is no camera library, so nothing is installed for it and the rest still works
-(**Demo sin cámara** included). The conditions use only `sys_platform` and `platform_machine`:
-`platform_release` would make pip fail on Linux, where it is a kernel name such as `6.8.0-45-generic`
-and not a version.
+The **Entorno** card says which one ("Se instalará requirements-macos.txt."). A project can carry
+both platform files and work on both computers; an old `requirements.txt` that only works on Linux
+is then ignored on the Mac without touching it.
+
+When the project has none, the card says "Sin requirements.txt: se usará la plantilla de macOS" (or
+Linux), and **Preparar entorno** first writes that computer's template into the project and then
+installs it.
+
+| Package | `requirements-linux.txt` | `requirements-macos.txt` | Why |
+|---|---|---|---|
+| `numpy>=1.24` | ✓ | ✓ | Point clouds and depth images. |
+| `scipy>=1.10` | ✓ | ✓ | Fitting the plane, segmenting and measuring the piece. |
+| `matplotlib>=3.7` | ✓ | ✓ | The thickness heat maps and the views (PNG). |
+| `pyrealsense2>=2.55` | ✓ | | The RealSense camera; **Ver cámara** and **Guardar imagen** need it too. |
+| `pyrealsense2-macosx>=2.56` | | ✓ (Apple silicon only) | The same camera library. Intel publishes no macOS wheels, so `pyrealsense2` cannot be installed on a Mac at all; this community build imports the same way (`import pyrealsense2`) and needs macOS 15 or later. |
+
+On an Intel Mac the camera line's condition (`platform_machine == "arm64"`) skips it, and the rest
+still works (**Demo sin cámara** included).
 
 A requirements file that lists no packages (only comments or blank lines) installs nothing and
-skips pip, so it needs no internet. **Descargar plantilla de requirements.txt** writes the
-template without installing; it never overwrites a file: if `requirements.txt` already exists, the
-template is saved beside it as `requirements.plantilla.txt` to compare.
+skips pip, so it needs no internet. The **Plantilla Linux** and **Plantilla macOS** buttons write
+those templates into the project without installing, to add to the project's repository or to
+compare. They never overwrite a file: if it already exists they say so and leave it as it is.
 
 ## The status
 
@@ -69,10 +76,10 @@ In the project folder, one after the other, stopping at the first that fails:
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -r requirements-macos.txt   # or -linux, or requirements.txt
 ```
 
-Without a `requirements.txt` it writes the template first (see above); with one that lists no
+The file is picked as described above; without any it writes the template first. With one that lists no
 packages it only creates `.venv` and says there was nothing to install. An
 existing `.venv` is reused, not deleted. Pressing it again on a ready environment (**Volver a
 preparar**) installs whatever is missing.

@@ -7,7 +7,7 @@ var (
 	ErrAlreadyRunning = errors.New("already running")
 	// ErrNotAFile is returned when a script path points to something that is not a regular file.
 	ErrNotAFile = errors.New("not a regular file")
-	// ErrTemplateExists is returned when both names a template can be saved under are taken.
+	// ErrTemplateExists is returned when the file a template would be saved as already exists.
 	ErrTemplateExists = errors.New("template already saved")
 )
 

@@ -7,16 +7,18 @@ import (
 )
 
 func TestSetupPlanInstallsRequirementsWhenThereAreAny(t *testing.T) {
-	steps := SetupPlan("python3", true)
-	if len(steps) != 3 || steps[0].Program != "python3" || steps[2].Args[len(steps[2].Args)-1] != RequirementsFile {
+	steps := SetupPlan("python3", "requirements-macos.txt", true)
+	if len(steps) != 3 || steps[0].Program != "python3" || steps[2].Args[len(steps[2].Args)-1] != "requirements-macos.txt" {
 		t.Errorf("got %+v", steps)
 	}
 }
 
 func TestSetupPlanOnlyCreatesTheVenvWithoutRequirements(t *testing.T) {
-	steps := SetupPlan("python3", false)
-	if len(steps) != 2 || steps[1].Program != "" || !strings.Contains(steps[1].Label, RequirementsFile) {
-		t.Errorf("got %+v", steps)
+	for _, requirements := range []string{"", RequirementsFile} {
+		steps := SetupPlan("python3", requirements, false)
+		if len(steps) != 2 || steps[1].Program != "" || !strings.Contains(steps[1].Label, RequirementsFile) {
+			t.Errorf("%q: got %+v", requirements, steps)
+		}
 	}
 }
 

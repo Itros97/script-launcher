@@ -30,7 +30,7 @@ func Describe(err error) string {
 	case errors.Is(err, domain.ErrAliasTaken):
 		return "Ya existe uno con ese nombre: elige otro."
 	case errors.Is(err, services.ErrTemplateExists):
-		return "Ya existen requirements.txt y requirements.plantilla.txt: borra la plantilla si quieres otra."
+		return "Esa plantilla ya está en la carpeta del proyecto: borra el archivo si quieres guardarla otra vez."
 	case errors.Is(err, fs.ErrNotExist):
 		return "El archivo o la carpeta ya no existe."
 	default:

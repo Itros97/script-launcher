@@ -12,48 +12,64 @@ import (
 	"github.com/Itros97/script-launcher/internal/services/templates"
 )
 
-const missingRequirements = "Sin requirements.txt: se usará la plantilla."
+// The tests run on Linux, so the launcher picks and offers the Linux template first.
+const missingRequirements = "Sin requirements.txt: se usará la plantilla de Linux."
 
-func TestSetupWithoutRequirementsInstallsTheTemplate(t *testing.T) {
+func TestSetupWithoutRequirementsInstallsThisComputersTemplate(t *testing.T) {
 	project := calibreProject(t)
 	app := openCalibre(t, project)
 	waitForText(t, app.window, missingRequirements)
 	click(t, app.window, "Preparar entorno")
 	waitForText(t, app.window, "Preparando…")
-	content, err := os.ReadFile(filepath.Join(project, domain.RequirementsFile))
-	if err != nil || !bytes.Equal(content, templates.Requirements) {
-		t.Errorf("requirements.txt is not the template: %v", err)
+	content, err := os.ReadFile(filepath.Join(project, domain.Linux.RequirementsFile()))
+	if err != nil || !bytes.Equal(content, templates.Requirements(domain.Linux)) {
+		t.Errorf("requirements-linux.txt is not the template: %v", err)
 	}
 	if slices.Contains(app.window.Texts(), missingRequirements) {
 		t.Error("the missing requirements hint is still shown")
 	}
 }
 
-func TestTemplateButtonWritesTheRequirementsAndClearsTheHint(t *testing.T) {
+func TestEachTemplateButtonSavesItsOwnFile(t *testing.T) {
 	project := calibreProject(t)
 	app := openCalibre(t, project)
 	waitForText(t, app.window, missingRequirements)
-	click(t, app.window, "Descargar plantilla de requirements.txt")
-	waitForText(t, app.window, "Plantilla guardada: requirements.txt")
-	if _, err := os.Stat(filepath.Join(project, domain.RequirementsFile)); err != nil {
-		t.Errorf("requirements.txt not written: %v", err)
+	click(t, app.window, "Plantilla macOS")
+	waitForText(t, app.window, "Plantilla guardada: requirements-macos.txt")
+	if content, _ := os.ReadFile(filepath.Join(project, domain.MacOS.RequirementsFile())); !bytes.Equal(content, templates.Requirements(domain.MacOS)) {
+		t.Errorf("requirements-macos.txt is not the macOS template: %q", content)
 	}
-	if slices.Contains(app.window.Texts(), missingRequirements) {
-		t.Error("the missing requirements hint is still shown")
-	}
+	waitForText(t, app.window, missingRequirements) // the macOS file is not installed on Linux
+	click(t, app.window, "Plantilla Linux")
+	waitForText(t, app.window, "Plantilla guardada: requirements-linux.txt")
+	waitForText(t, app.window, "Se instalará requirements-linux.txt.")
 }
 
-func TestTemplateIsSavedBesideExistingRequirements(t *testing.T) {
+func TestThisComputersFileWinsOverRequirementsTxt(t *testing.T) {
 	project := calibreProject(t)
 	if err := os.WriteFile(filepath.Join(project, domain.RequirementsFile), []byte("mine\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	app := openCalibre(t, project)
-	waitForText(t, app.window, "Sin entorno")
-	click(t, app.window, "Descargar plantilla de requirements.txt")
-	waitForText(t, app.window, "Plantilla guardada: requirements.plantilla.txt")
+	waitForText(t, app.window, "Se instalará requirements.txt.")
+	click(t, app.window, "Plantilla Linux")
+	waitForText(t, app.window, "Se instalará requirements-linux.txt.")
 	if content, _ := os.ReadFile(filepath.Join(project, domain.RequirementsFile)); string(content) != "mine\n" {
 		t.Errorf("requirements.txt was changed: %q", content)
+	}
+}
+
+func TestTemplateButtonNeverOverwrites(t *testing.T) {
+	project := calibreProject(t)
+	if err := os.WriteFile(filepath.Join(project, domain.MacOS.RequirementsFile()), []byte("mine\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	app := openCalibre(t, project)
+	waitForText(t, app.window, "Sin entorno")
+	click(t, app.window, "Plantilla macOS")
+	waitForText(t, app.window, "Esa plantilla ya está en la carpeta del proyecto: borra el archivo si quieres guardarla otra vez.")
+	if content, _ := os.ReadFile(filepath.Join(project, domain.MacOS.RequirementsFile())); string(content) != "mine\n" {
+		t.Errorf("requirements-macos.txt was changed: %q", content)
 	}
 }
 

@@ -26,16 +26,20 @@ type SetupStep struct {
 	Args    []string
 }
 
-// SetupPlan lists the steps that prepare a project's environment with the given Python; when the
-// requirements file is missing or lists no packages there is nothing to install, and the plan says so.
-func SetupPlan(python string, hasRequirements bool) []SetupStep {
+// SetupPlan lists the steps that prepare a project's environment with the given Python and install
+// the requirements file named; when it is missing ("") or lists no packages there is nothing to
+// install, and the plan says so.
+func SetupPlan(python, requirements string, hasPackages bool) []SetupStep {
 	steps := []SetupStep{{Label: "Creando el entorno (" + VenvDir + ")", Program: python, Args: []string{"-m", "venv", VenvDir}}}
-	if !hasRequirements {
-		return append(steps, SetupStep{Label: "Nada que instalar en " + RequirementsFile})
+	if requirements == "" {
+		return append(steps, SetupStep{Label: "Nada que instalar: no hay " + RequirementsFile})
+	}
+	if !hasPackages {
+		return append(steps, SetupStep{Label: "Nada que instalar en " + requirements})
 	}
 	return append(steps,
 		SetupStep{Label: "Actualizando pip", Program: VenvPython, Args: []string{"-m", "pip", "install", "--upgrade", "pip"}},
-		SetupStep{Label: "Instalando dependencias (" + RequirementsFile + ")", Program: VenvPython, Args: []string{"-m", "pip", "install", "-r", RequirementsFile}},
+		SetupStep{Label: "Instalando dependencias (" + requirements + ")", Program: VenvPython, Args: []string{"-m", "pip", "install", "-r", requirements}},
 	)
 }
 

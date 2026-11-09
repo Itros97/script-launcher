@@ -81,7 +81,8 @@ Copia la carpeta **calibre3d** a tu carpeta **Documentos** (en Fedora, `Document
 `Documentos` también). Así no se pierde entre las descargas.
 
 Dentro de esa carpeta deben verse, al menos, `prueba.sh` y otra carpeta `calibre3d`. No hace falta
-ningún `requirements.txt`: Script Launcher pone el suyo al preparar el entorno.
+ningún `requirements.txt`: Script Launcher pone el suyo al preparar el entorno (en Mac,
+`requirements-macos.txt`; en Linux, `requirements-linux.txt`).
 
 ## 5. Preparar Calibre3D en Script Launcher
 
@@ -133,7 +134,8 @@ van a `datos/fotos/`.
 | «No encuentro python3 y no puedo descargarlo» | Tu ordenador no es ni un Mac ni un Linux normal de 64 bits. Instala Python 3.12 desde [python.org](https://www.python.org/downloads/) y vuelve a abrir Script Launcher. |
 | «Sin proyecto» o «En esta carpeta no está el programa calibre3d» | Pulsa **Elegir carpeta**, entra en la carpeta calibre3d de fuera (la que tiene `prueba.sh`) y pulsa **Choose**. |
 | «Esta carpeta tiene prueba.sh pero le falta la carpeta calibre3d/» | Falta parte del proyecto: vuelve a copiar la carpeta completa. |
-| «Incompleto» con «Falta la librería…» | Pulsa **Preparar entorno** otra vez. Si se repite, añade la librería que dice al `requirements.txt` que Script Launcher dejó en la carpeta del proyecto. |
+| «Incompleto» con «Falta la librería…» | Pulsa **Preparar entorno** otra vez. Si se repite, añade la librería que dice al archivo que pone «Se instalará…» en la tarjeta **Entorno** (por ejemplo `requirements-macos.txt`). |
+| En Mac, la instalación dice que no encuentra una versión de `pyrealsense2` | El proyecto tiene un `requirements.txt` antiguo, solo para Linux. Pulsa **Plantilla macOS** y luego **Preparar entorno**: a partir de ahí se instala `requirements-macos.txt` y el otro se deja tal cual. |
 | La instalación falla con errores de red | Comprueba la conexión a internet y pulsa **Preparar entorno** otra vez. |
 | «No se encuentra ninguna RealSense conectada» | Conecta la cámara directamente al ordenador, sin hub. En Fedora, repite el paso 2 y reconecta la cámara. |
 | En Mac, un error de permisos USB al usar la cámara | Por verificar en un Mac: en algunas versiones de macOS la librería de la cámara necesita permisos de administrador. Avisa a quien te pasó el programa. |

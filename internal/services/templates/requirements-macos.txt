@@ -1,0 +1,18 @@
+# Dependencias de calibre3d en macOS para «Preparar entorno».
+# Una por línea. Añade aquí cualquier otra librería que use tu proyecto.
+# En Linux se usa requirements-linux.txt en su lugar.
+
+# Cálculo con las nubes de puntos y las imágenes de profundidad.
+numpy>=1.24
+
+# Ajuste del plano, segmentación y geometría de la pieza.
+scipy>=1.10
+
+# Mapas de calor del espesor y vistas de la pieza (PNG).
+matplotlib>=3.7
+
+# Cámara RealSense. La usan calibre3d y los botones «Ver cámara» y «Guardar imagen».
+# Intel no publica pyrealsense2 para Mac, así que se usa pyrealsense2-macosx, que se carga igual
+# (import pyrealsense2). Solo existe para Mac con chip Apple (M1 o posterior) y necesita macOS 15
+# o posterior; en un Mac con Intel no se instala y la demo sin cámara sigue funcionando.
+pyrealsense2-macosx>=2.56; platform_machine == "arm64"

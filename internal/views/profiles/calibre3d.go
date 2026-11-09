@@ -26,7 +26,7 @@ type Calibre3D struct {
 	project       string
 	status        domain.EnvStatus
 	reason        string        // why the environment is not ready, when the check could tell
-	hasReqs       bool          // the project has a requirements.txt
+	reqs          string        // the requirements file setup installs, "" when the project has none
 	stale         bool          // the status has not been checked since the profile was built
 	checked       *services.Run // the setup run whose end was already checked
 	pythonReady   bool          // the Python environments are made with is installed
