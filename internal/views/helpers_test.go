@@ -68,7 +68,8 @@ func openAppWith(t *testing.T, saved data.Settings, setUp func(*services.PythonE
 	t.Cleanup(func() { _ = preview.Stop() })
 	calibre, err := profiles.NewCalibre3D(profiles.Calibre3DServices{
 		Env: env, Camera: services.NewCaptureService(service, preview, scriptDir), Preview: preview,
-		Calibre: services.NewCalibreService(service, preview), Settings: settings,
+		Calibre: services.NewCalibreService(service, preview),
+		Library: services.NewLibraryService(data.JSONMeasurementRepository{}, time.Now), Settings: settings,
 	})
 	if err != nil {
 		t.Fatal(err)

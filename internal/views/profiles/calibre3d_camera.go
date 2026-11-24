@@ -59,7 +59,7 @@ func (profile *Calibre3D) startPreview(current *session.Session) {
 		current.Warn(err)
 		return
 	}
-	profile.activity = activity{title: "Cámara", live: true}
+	profile.follow(activity{title: "Cámara", live: true})
 }
 
 // save keeps the frame on screen while the camera is live, and otherwise captures one and follows it on the right.

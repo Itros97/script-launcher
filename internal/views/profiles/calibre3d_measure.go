@@ -95,7 +95,7 @@ func (profile *Calibre3D) runStep(current *session.Session, step domain.CalibreS
 		return
 	}
 	profile.step = stepRun{step: step, name: name, run: run}
-	profile.activity = activity{title: step.Title(name), run: run, step: &profile.step}
+	profile.follow(activity{title: step.Title(name), run: run, step: &profile.step})
 }
 
 // stepRunning tells whether a calibre3d step is running now.
@@ -124,6 +124,7 @@ func (profile *Calibre3D) finishStep(current *session.Session) {
 		return
 	}
 	profile.result = &measured{measurement: measurement, step: step.step, name: step.name}
+	profile.library.loaded = false
 	current.Notify("Medida lista: "+step.step.Title(step.name), false)
 }
 

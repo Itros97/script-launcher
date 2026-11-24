@@ -79,3 +79,22 @@ func (step CalibreStep) ResultFile(project, name, suffix string) string {
 
 // PlaneFile is where calibre3d keeps the reference plane.
 func PlaneFile(project string) string { return filepath.Join(project, calibreDataDir, "plano.json") }
+
+// ResultsDir is where calibre3d leaves the result of every measured piece.
+func ResultsDir(project string) string {
+	return filepath.Join(project, calibreDataDir, resultsDir)
+}
+
+// IsPieceResult tells whether a file in ResultsDir is a measured piece's result, not the centring's.
+func IsPieceResult(fileName string) bool {
+	return filepath.Ext(fileName) == ".json" && fileName != centerResult+".json"
+}
+
+// PieceFiles are every file calibre3d leaves for a measured piece: its result and its two pictures.
+func PieceFiles(project, name string) []string {
+	return []string{
+		StepMeasure.ResultFile(project, name, ""),
+		StepMeasure.ResultFile(project, name, "_mapa"),
+		StepMeasure.ResultFile(project, name, "_vista"),
+	}
+}

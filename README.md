@@ -87,7 +87,7 @@ python3, `.js` and `.ts` with node, and anything else with the executable bit, d
 | [Overview](docs/01-overview.md) | What the launcher does, and what it does not do yet. |
 | [Get started](docs/02-get-started.md) | Build it, add a script, run it, and where the list is kept. |
 | [Modules](docs/03-modules.md) | The layers, how they connect, and how to add a profile or a new kind of script. |
-| [Calibre3D](docs/04-calibre3d.md) | The Calibre3D profile: one click to prepare the calibre3d project's Python environment, and named photos from its RealSense camera. |
+| [Calibre3D](docs/04-calibre3d.md) | The Calibre3D profile: one click to prepare the calibre3d project's Python environment, named photos from its RealSense camera, and a library of measurements to filter, delete and export as CSV. |
 | [Primera instalación](docs/05-primera-instalacion.md) | In Spanish: setting up a new Mac or Fedora computer, the camera and Calibre3D, step by step. |
 | [Roadmap](docs/06-roadmap.md) | What could come next. |
 

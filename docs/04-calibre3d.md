@@ -129,6 +129,50 @@ If a step fails, its error shows in red under **Actividad** and the last result 
 `patron` (calibrating with pieces of known size) and `plantilla` (the mat's PDF) are not buttons
 yet: run them from a terminal in the project folder.
 
+## The library
+
+The **Biblioteca** card (shown once a project is chosen, even before its environment is ready)
+opens the library on the right: every measurement calibre3d saved in `datos/resultados/`, newest
+first, 20 per page. Each row has a checkbox, the name and date, the length, width, thickness and
+maximum Feret diameter in millimetres, a ⚠ when calibre3d left a warning (hover it to read it), and
+its own export and delete buttons. **Volver** goes back to **Actividad**; any step or the camera
+also brings it back.
+
+The demo's result (`demo/`) and the centring (`centrado.json`) are not pieces and are not listed. A
+result file that cannot be read is left out, with a notice saying how many.
+
+### Filtering
+
+- **Buscar por nombre** keeps the measurements whose name holds the text, in any case.
+- **Largo**, **Ancho** and **Espesor** each take a minimum and a maximum in millimetres, with a
+  comma or a point (`12,5` or `12.5`). An empty field does not filter and both ends are included. A
+  field that is not a number turns red and is ignored.
+- **Limpiar** empties every filter.
+
+The count above ("2 de 37 mediciones") says how many pass the filter.
+
+### Exporting to CSV
+
+**Exportar CSV** offers the selected measurements, this page, or all of them (all that pass the
+filter); the button on a row exports that one alone. A folder picker asks where, starting in the
+last folder used, and the file is named after the moment: `mediciones-2026-11-24_153012.csv`. It
+never overwrites a file.
+
+The CSV is made for a spreadsheet in Spanish: `;` between fields and a decimal comma.
+
+```
+nombre;fecha;largo_mm;ancho_mm;espesor_mm;feret_max_mm;avisos
+pieza1;2026-11-24T15:30:12;61,2300;40,5000;19,8750;62,0000;Pieza lejos del centro
+```
+
+Several warnings are joined with ` | `. An unknown date is left empty.
+
+### Deleting
+
+The button on a row deletes that measurement; **Borrar seleccionadas (n)** deletes the selection
+(**Toda la página** selects or clears the page). Both ask first. Deleting removes the result file and
+its pictures (`_mapa.png`, `_vista.png`), and cannot be undone.
+
 ## Seeing the camera
 
 Once the status is **Listo**, **Ver cámara** in the **Cámara** card shows the camera live in the

@@ -16,6 +16,7 @@ type Calibre3DServices struct {
 	Camera   *services.CaptureService
 	Preview  *services.PreviewService
 	Calibre  *services.CalibreService
+	Library  *services.LibraryService
 	Settings data.SettingsRepository
 }
 
@@ -24,6 +25,7 @@ type Calibre3DServices struct {
 type Calibre3D struct {
 	Calibre3DServices
 	project       string
+	exportFolder  string // where the library's last CSV went, to start the picker there
 	status        domain.EnvStatus
 	reason        string        // why the environment is not ready, when the check could tell
 	reqs          string        // the requirements file setup installs, "" when the project has none
@@ -40,6 +42,7 @@ type Calibre3D struct {
 	plane         planeState    // the project's reference plane
 	result        *measured     // the last measurement shown
 	activity      activity      // what the right panel shows
+	library       library       // the saved measurements, shown on the right instead of the activity
 	view          components.CameraView
 	images        components.ImageFiles
 }
@@ -59,7 +62,9 @@ func NewCalibre3D(with Calibre3DServices) (*Calibre3D, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Calibre3D{Calibre3DServices: with, project: saved.Calibre3DProject, stale: true}, nil
+	return &Calibre3D{
+		Calibre3DServices: with, project: saved.Calibre3DProject, exportFolder: saved.Calibre3DExportFolder, stale: true,
+	}, nil
 }
 
 // ID returns the Calibre3D profile's ID.
@@ -87,13 +92,20 @@ func (profile *Calibre3D) Draw(context *ui.Context, current *session.Session) {
 				profile.drawEnvCard(context, current)
 				profile.drawMeasureCard(context, current)
 				profile.drawCameraCard(context, current)
+				profile.drawLibraryCard(context)
 			})
 		})
 		context.Separator()
-		profile.drawActivity(context)
+		if profile.library.open {
+			profile.drawLibrary(context, current)
+		} else {
+			profile.drawActivity(context)
+		}
 	})
 	profile.drawFolderPicker(context, current)
 	profile.drawNameDialog(context, current)
+	profile.drawDeleteDialog(context, current)
+	profile.drawExportPicker(context, current)
 }
 
 // Leave closes the live camera when another profile is chosen, so it is not left busy.
@@ -105,7 +117,13 @@ func (profile *Calibre3D) Leave(current *session.Session) {
 
 // show makes a run the one the right panel follows.
 func (profile *Calibre3D) show(title string, run *services.Run) {
-	profile.activity = activity{title: title, run: run}
+	profile.follow(activity{title: title, run: run})
+}
+
+// follow makes the right panel show this activity, closing the library if it was open.
+func (profile *Calibre3D) follow(next activity) {
+	profile.activity = next
+	profile.library.open = false
 }
 
 // busy tells whether something that uses the camera or the project is running now.

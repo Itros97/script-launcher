@@ -52,7 +52,8 @@ func run() error {
 	preview := services.NewPreviewService(cacheDir(), window.Wake)
 	camera := services.NewCaptureService(service, preview, cacheDir())
 	calibre, err := profiles.NewCalibre3D(profiles.Calibre3DServices{
-		Env: env, Camera: camera, Preview: preview, Calibre: services.NewCalibreService(service, preview), Settings: settings,
+		Env: env, Camera: camera, Preview: preview, Calibre: services.NewCalibreService(service, preview),
+		Library: services.NewLibraryService(data.JSONMeasurementRepository{}, time.Now), Settings: settings,
 	})
 	if err != nil {
 		return err
