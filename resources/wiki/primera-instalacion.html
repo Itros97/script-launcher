@@ -49,13 +49,16 @@ sudo udevadm trigger
 
 <h2 id="3-descargar-script-launcher">3. Descargar Script Launcher</h2>
 
-<p>Entra en la página de descargas:
-<strong><a href="https://github.com/Itros97/script-launcher/releases/latest" target="_blank">github.com/Itros97/script-launcher/releases/latest</a></strong></p>
+<p>La versión actual es la <strong>v0.2.0</strong>. Entra en su página de descargas:
+<strong><a href="https://github.com/Itros97/script-launcher/releases/tag/v0.2.0" target="_blank">github.com/Itros97/script-launcher/releases/tag/v0.2.0</a></strong></p>
+
+<p>¿Ya tenías la v0.1.0? Mira <a href="#actualizar-a-la-v020">Actualizar a la v0.2.0</a> al final.</p>
 
 <p><strong>macOS</strong></p>
 
 <ol>
-<li>Descarga <strong>ScriptLauncher-macOS.zip</strong>. Sirve para todos los Mac (M1–M4 e Intel).</li>
+<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.2.0/ScriptLauncher-macOS.zip" target="_blank">ScriptLauncher-macOS.zip</a></strong>.
+Sirve para todos los Mac (con chip Apple o Intel).</li>
 <li>Abre el zip: aparece <strong>Script Launcher</strong>. Arrástralo a la carpeta <strong>Aplicaciones</strong>.</li>
 <li>La primera vez, el Mac dirá que no puede comprobar el desarrollador. Es normal: la app no está
 firmada con una cuenta de pago de Apple. Para abrirla:
@@ -70,7 +73,7 @@ firmada con una cuenta de pago de Apple. Para abrirla:
 <p><strong>Fedora</strong></p>
 
 <ol>
-<li>Descarga <strong>script-launcher-linux-x86_64.tar.gz</strong>.</li>
+<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.2.0/script-launcher-linux-x86_64.tar.gz" target="_blank">script-launcher-linux-x86_64.tar.gz</a></strong>.</li>
 <li>Abre la carpeta Descargas, haz clic derecho en el archivo y elige <strong>Extraer aquí</strong>.</li>
 <li>Abre la <strong>Terminal</strong> y pega:</li>
 </ol>
@@ -103,7 +106,9 @@ hacerlo una vez en cada ordenador.</li>
 <li>En la tarjeta <strong>Proyecto</strong>, pulsa <strong>Elegir carpeta</strong>. Se abre un selector (sus botones están en
 inglés): pulsa <strong>Home</strong> a la izquierda, haz clic en <strong>Documentos</strong> y luego en <strong>calibre3d</strong> (la
 de fuera, la que tiene <code>prueba.sh</code>) para entrar en ella, y pulsa <strong>Choose</strong>.</li>
-<li>En la tarjeta <strong>Entorno</strong>, pulsa <strong>Preparar entorno</strong>. A la derecha verás cómo se instala todo.
+<li>En la tarjeta <strong>Entorno</strong>, debajo del estado, pone qué archivo se va a instalar (por ejemplo
+«Sin requirements.txt: se usará la plantilla de macOS» o «Se instalará requirements-macos.txt»).
+Pulsa <strong>Preparar entorno</strong>. A la derecha verás cómo se instala todo.
 Tarda unos minutos y descarga unos 300 MB.</li>
 <li>Cuando termine, el entorno dice 🟢 <strong>Listo</strong>.</li>
 </ol>
@@ -212,6 +217,30 @@ van a <code>datos/fotos/</code>.</p>
 </tr>
 </tbody>
 </table>
+
+<h2 id="actualizar-a-la-v0-2-0">Actualizar a la v0.2.0</h2>
+
+<p>Si ya tenías instalada la v0.1.0:</p>
+
+<ul>
+<li><strong>macOS</strong>: descarga el zip nuevo (paso 3) y arrastra <strong>Script Launcher</strong> a <strong>Aplicaciones</strong>. Si
+pregunta, elige <strong>Reemplazar</strong>. Puede que tengas que volver a pulsar <strong>Abrir igualmente</strong>.</li>
+<li><strong>Fedora</strong>: descarga y extrae el archivo nuevo (paso 3) y vuelve a ejecutar <code>install.sh</code>.</li>
+</ul>
+
+<p>Tus scripts y la carpeta del proyecto se mantienen. Novedades de la v0.2.0:</p>
+
+<ul>
+<li><strong>Instalar Python 3.12</strong>: un botón en la tarjeta <strong>Python</strong> descarga el Python que usa Calibre3D;
+ya no hace falta el del ordenador.</li>
+<li><strong>Una plantilla de dependencias para cada sistema</strong>: <code>requirements-linux.txt</code> y
+<code>requirements-macos.txt</code>. Al preparar el entorno se instala la del ordenador; si no está, se usa
+<code>requirements.txt</code>. Los botones <strong>Plantilla Linux</strong> y <strong>Plantilla macOS</strong> de la tarjeta
+<strong>Entorno</strong> guardan cada una en la carpeta del proyecto.</li>
+<li><strong>Si en el Mac fallaba la instalación de <code>pyrealsense2</code></strong> («could not find a version that
+satisfies…»): con la v0.2.0 pulsa <strong>Plantilla macOS</strong> y luego <strong>Preparar entorno</strong>. Ya no hay que
+tocar el <code>requirements.txt</code>.</li>
+</ul>
 
 <blockquote>
 <p><strong>Nota:</strong> la parte de macOS no se ha probado todavía en un Mac con la D405. Si algo no coincide

@@ -21,20 +21,20 @@ each one what it needs.</p>
 <tbody>
 <tr>
 <td><code>domain</code></td>
-<td><code>script.go</code>, <code>runner.go</code>, <code>output.go</code>, <code>profile.go</code></td>
-<td>Plain data and pure logic: a saved script, the runners and the registry that picks one, the output buffer, the profile IDs. No disk, no processes.</td>
+<td><code>script.go</code>, <code>runner.go</code>, <code>output.go</code>, <code>profile.go</code>, <code>measurement*.go</code>, <code>pagination.go</code></td>
+<td>Plain data and pure logic: a saved script, the runners and the registry that picks one, the output buffer, the profile IDs, calibre3d&rsquo;s measurements with their filter and CSV, and paging. No disk, no processes.</td>
 </tr>
 
 <tr>
 <td><code>data</code></td>
-<td><code>script_repository.go</code>, <code>settings_repository.go</code>, their <code>json_*</code> implementations, <code>json_file.go</code></td>
-<td>The repositories and their JSON files. The disk sits behind a <code>FileStore</code>, so tests use a map.</td>
+<td><code>script_repository.go</code>, <code>settings_repository.go</code>, <code>measurement_repository.go</code>, their <code>json_*</code> implementations, <code>json_file.go</code></td>
+<td>The repositories and their JSON files. The disk sits behind a <code>FileStore</code>, so tests use a map; the measurements are read straight from calibre3d&rsquo;s folder.</td>
 </tr>
 
 <tr>
 <td><code>services</code></td>
-<td><code>run_service.go</code>, <code>run.go</code>, <code>python_env_service.go</code>, <code>capture_service.go</code>, <code>preview_service.go</code></td>
-<td>Starting, watching and stopping processes; one <code>Run</code> per execution, safe to read from the UI while its goroutines write. Preparing and checking a Python <code>.venv</code>, saving photos, and the live camera view, with the scripts embedded in <code>capture/</code>.</td>
+<td><code>run_service.go</code>, <code>run.go</code>, <code>python_env_service.go</code>, <code>capture_service.go</code>, <code>preview_service.go</code>, <code>library_service.go</code></td>
+<td>Starting, watching and stopping processes; one <code>Run</code> per execution, safe to read from the UI while its goroutines write. Preparing and checking a Python <code>.venv</code>, saving photos, the live camera view, with the scripts embedded in <code>capture/</code>, and listing, deleting and exporting measurements.</td>
 </tr>
 
 <tr>
@@ -52,7 +52,7 @@ each one what it needs.</p>
 <tr>
 <td><code>views/profiles</code></td>
 <td><code>profile.go</code>, <code>default.go</code>, <code>calibre3d*.go</code></td>
-<td>The layouts, and the registry the selector offers. Calibre3D is split by card: project, environment, camera.</td>
+<td>The layouts, and the registry the selector offers. Calibre3D is split by card: project, environment, measuring, camera, and the library (panel, filters, rows, actions).</td>
 </tr>
 
 <tr>

@@ -248,6 +248,50 @@ output come the heat map (<code>_mapa.png</code>) and the view (<code>_vista.png
 <p><code>patron</code> (calibrating with pieces of known size) and <code>plantilla</code> (the mat&rsquo;s PDF) are not buttons
 yet: run them from a terminal in the project folder.</p>
 
+<h2 id="the-library">The library</h2>
+
+<p>The <strong>Biblioteca</strong> card (shown once a project is chosen, even before its environment is ready)
+opens the library on the right: every measurement calibre3d saved in <code>datos/resultados/</code>, newest
+first, 20 per page. Each row has a checkbox, the name and date, the length, width, thickness and
+maximum Feret diameter in millimetres, a ⚠ when calibre3d left a warning (hover it to read it), and
+its own export and delete buttons. <strong>Volver</strong> goes back to <strong>Actividad</strong>; any step or the camera
+also brings it back.</p>
+
+<p>The demo&rsquo;s result (<code>demo/</code>) and the centring (<code>centrado.json</code>) are not pieces and are not listed. A
+result file that cannot be read is left out, with a notice saying how many.</p>
+
+<h3 id="filtering">Filtering</h3>
+
+<ul>
+<li><strong>Buscar por nombre</strong> keeps the measurements whose name holds the text, in any case.</li>
+<li><strong>Largo</strong>, <strong>Ancho</strong> and <strong>Espesor</strong> each take a minimum and a maximum in millimetres, with a
+comma or a point (<code>12,5</code> or <code>12.5</code>). An empty field does not filter and both ends are included. A
+field that is not a number turns red and is ignored.</li>
+<li><strong>Limpiar</strong> empties every filter.</li>
+</ul>
+
+<p>The count above (&ldquo;2 de 37 mediciones&rdquo;) says how many pass the filter.</p>
+
+<h3 id="exporting-to-csv">Exporting to CSV</h3>
+
+<p><strong>Exportar CSV</strong> offers the selected measurements, this page, or all of them (all that pass the
+filter); the button on a row exports that one alone. A folder picker asks where, starting in the
+last folder used, and the file is named after the moment: <code>mediciones-2026-11-24_153012.csv</code>. It
+never overwrites a file.</p>
+
+<p>The CSV is made for a spreadsheet in Spanish: <code>;</code> between fields and a decimal comma.</p>
+<pre><code>nombre;fecha;largo_mm;ancho_mm;espesor_mm;feret_max_mm;avisos
+pieza1;2026-11-24T15:30:12;61,2300;40,5000;19,8750;62,0000;Pieza lejos del centro
+</code></pre>
+
+<p>Several warnings are joined with <code>|</code>. An unknown date is left empty.</p>
+
+<h3 id="deleting">Deleting</h3>
+
+<p>The button on a row deletes that measurement; <strong>Borrar seleccionadas (n)</strong> deletes the selection
+(<strong>Toda la página</strong> selects or clears the page). Both ask first. Deleting removes the result file and
+its pictures (<code>_mapa.png</code>, <code>_vista.png</code>), and cannot be undone.</p>
+
 <h2 id="seeing-the-camera">Seeing the camera</h2>
 
 <p>Once the status is <strong>Listo</strong>, <strong>Ver cámara</strong> in the <strong>Cámara</strong> card shows the camera live in the
