@@ -44,7 +44,7 @@ Treat it as a working draft, not as code I vouch for.
 ## 🚀 Quick start
 
 **Download** the latest version
-([v0.2.0](https://github.com/Itros97/script-launcher/releases/tag/v0.2.0)) from
+([v0.3.0](https://github.com/Itros97/script-launcher/releases/tag/v0.3.0)) from
 [Releases](https://github.com/Itros97/script-launcher/releases/latest): `ScriptLauncher-macOS.zip`
 (Apple silicon and Intel) or `script-launcher-linux-x86_64.tar.gz` (unpack it and run
 `bash install.sh`). Setting up a new computer for Calibre3D step by step, in Spanish:
