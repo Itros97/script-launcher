@@ -50,5 +50,6 @@ func (profile *Calibre3D) choose(current *session.Session, folder string) {
 		return
 	}
 	profile.project = folder
+	profile.library = library{}
 	profile.check(current)
 }

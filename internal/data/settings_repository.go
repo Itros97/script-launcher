@@ -7,6 +7,8 @@ type Settings struct {
 	Profile domain.ProfileID `json:"profile"`
 	// Calibre3DProject is the folder of the calibre3d project, empty until one is chosen.
 	Calibre3DProject string `json:"calibre3dProject,omitempty"`
+	// Calibre3DExportFolder is where the library's last CSV was exported, empty until one is.
+	Calibre3DExportFolder string `json:"calibre3dExportFolder,omitempty"`
 }
 
 // DefaultSettings are used when nothing was saved yet.

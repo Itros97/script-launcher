@@ -75,7 +75,8 @@ func capture(out string) error {
 	preview := services.NewPreviewService(folder, func() {})
 	calibre, err := profiles.NewCalibre3D(profiles.Calibre3DServices{
 		Env: env, Camera: services.NewCaptureService(service, preview, folder), Preview: preview,
-		Calibre: services.NewCalibreService(service, preview), Settings: settings,
+		Calibre: services.NewCalibreService(service, preview),
+		Library: services.NewLibraryService(data.JSONMeasurementRepository{}, time.Now), Settings: settings,
 	})
 	if err != nil {
 		return err

@@ -13,12 +13,12 @@ views ─→ profiles ─→ components ─→ session ─→ services ─→ do
 
 | Layer | Files | What it holds |
 |---|---|---|
-| `domain` | `script.go`, `runner.go`, `output.go`, `profile.go` | Plain data and pure logic: a saved script, the runners and the registry that picks one, the output buffer, the profile IDs. No disk, no processes. |
-| `data` | `script_repository.go`, `settings_repository.go`, their `json_*` implementations, `json_file.go` | The repositories and their JSON files. The disk sits behind a `FileStore`, so tests use a map. |
-| `services` | `run_service.go`, `run.go`, `python_env_service.go`, `capture_service.go`, `preview_service.go` | Starting, watching and stopping processes; one `Run` per execution, safe to read from the UI while its goroutines write. Preparing and checking a Python `.venv`, saving photos, and the live camera view, with the scripts embedded in `capture/`. |
+| `domain` | `script.go`, `runner.go`, `output.go`, `profile.go`, `measurement*.go`, `pagination.go` | Plain data and pure logic: a saved script, the runners and the registry that picks one, the output buffer, the profile IDs, calibre3d's measurements with their filter and CSV, and paging. No disk, no processes. |
+| `data` | `script_repository.go`, `settings_repository.go`, `measurement_repository.go`, their `json_*` implementations, `json_file.go` | The repositories and their JSON files. The disk sits behind a `FileStore`, so tests use a map; the measurements are read straight from calibre3d's folder. |
+| `services` | `run_service.go`, `run.go`, `python_env_service.go`, `capture_service.go`, `preview_service.go`, `library_service.go` | Starting, watching and stopping processes; one `Run` per execution, safe to read from the UI while its goroutines write. Preparing and checking a Python `.venv`, saving photos, the live camera view, with the scripts embedded in `capture/`, and listing, deleting and exporting measurements. |
 | `views/session` | `session.go`, `actions.go` | What every profile shares: the scripts, the selection, the notices, the file picker, and the actions (add, remove, run, stop). |
 | `views/components` | `script_list.go`, `output_panel.go`, `bar.go`, … | The pieces layouts are built from. Each draws from a session and calls its actions. |
-| `views/profiles` | `profile.go`, `default.go`, `calibre3d*.go` | The layouts, and the registry the selector offers. Calibre3D is split by card: project, environment, camera. |
+| `views/profiles` | `profile.go`, `default.go`, `calibre3d*.go` | The layouts, and the registry the selector offers. Calibre3D is split by card: project, environment, measuring, camera, and the library (panel, filters, rows, actions). |
 | `views` | `app_view.go` | The window: toolbar with the profile selector, the active profile, status bar, picker, notices. |
 
 ## A frame
