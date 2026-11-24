@@ -49,15 +49,15 @@ sudo udevadm trigger
 
 <h2 id="3-descargar-script-launcher">3. Descargar Script Launcher</h2>
 
-<p>La versión actual es la <strong>v0.2.0</strong>. Entra en su página de descargas:
-<strong><a href="https://github.com/Itros97/script-launcher/releases/tag/v0.2.0" target="_blank">github.com/Itros97/script-launcher/releases/tag/v0.2.0</a></strong></p>
+<p>La versión actual es la <strong>v0.3.0</strong>. Entra en su página de descargas:
+<strong><a href="https://github.com/Itros97/script-launcher/releases/tag/v0.3.0" target="_blank">github.com/Itros97/script-launcher/releases/tag/v0.3.0</a></strong></p>
 
-<p>¿Ya tenías la v0.1.0? Mira <a href="#actualizar-a-la-v020">Actualizar a la v0.2.0</a> al final.</p>
+<p>¿Ya tenías una versión anterior? Mira <a href="#actualizar-a-la-v030">Actualizar a la v0.3.0</a> al final.</p>
 
 <p><strong>macOS</strong></p>
 
 <ol>
-<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.2.0/ScriptLauncher-macOS.zip" target="_blank">ScriptLauncher-macOS.zip</a></strong>.
+<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.3.0/ScriptLauncher-macOS.zip" target="_blank">ScriptLauncher-macOS.zip</a></strong>.
 Sirve para todos los Mac (con chip Apple o Intel).</li>
 <li>Abre el zip: aparece <strong>Script Launcher</strong>. Arrástralo a la carpeta <strong>Aplicaciones</strong>.</li>
 <li>La primera vez, el Mac dirá que no puede comprobar el desarrollador. Es normal: la app no está
@@ -73,7 +73,7 @@ firmada con una cuenta de pago de Apple. Para abrirla:
 <p><strong>Fedora</strong></p>
 
 <ol>
-<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.2.0/script-launcher-linux-x86_64.tar.gz" target="_blank">script-launcher-linux-x86_64.tar.gz</a></strong>.</li>
+<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.3.0/script-launcher-linux-x86_64.tar.gz" target="_blank">script-launcher-linux-x86_64.tar.gz</a></strong>.</li>
 <li>Abre la carpeta Descargas, haz clic derecho en el archivo y elige <strong>Extraer aquí</strong>.</li>
 <li>Abre la <strong>Terminal</strong> y pega:</li>
 </ol>
@@ -218,9 +218,9 @@ van a <code>datos/fotos/</code>.</p>
 </tbody>
 </table>
 
-<h2 id="actualizar-a-la-v0-2-0">Actualizar a la v0.2.0</h2>
+<h2 id="actualizar-a-la-v0-3-0">Actualizar a la v0.3.0</h2>
 
-<p>Si ya tenías instalada la v0.1.0:</p>
+<p>Si ya tenías instalada una versión anterior:</p>
 
 <ul>
 <li><strong>macOS</strong>: descarga el zip nuevo (paso 3) y arrastra <strong>Script Launcher</strong> a <strong>Aplicaciones</strong>. Si
@@ -228,7 +228,16 @@ pregunta, elige <strong>Reemplazar</strong>. Puede que tengas que volver a pulsa
 <li><strong>Fedora</strong>: descarga y extrae el archivo nuevo (paso 3) y vuelve a ejecutar <code>install.sh</code>.</li>
 </ul>
 
-<p>Tus scripts y la carpeta del proyecto se mantienen. Novedades de la v0.2.0:</p>
+<p>Tus scripts y la carpeta del proyecto se mantienen. Novedades de la v0.3.0:</p>
+
+<ul>
+<li><strong>Biblioteca de mediciones</strong>: una tarjeta nueva, <strong>Biblioteca</strong>, muestra todas las medidas
+guardadas, de 20 en 20. Se pueden buscar por nombre y filtrar por largo, ancho y espesor (mínimo y
+máximo), borrar, y exportar a CSV una a una, las marcadas, la página o todas. El CSV se abre bien
+en Excel o LibreOffice en español.</li>
+</ul>
+
+<p>Si vienes de la v0.1.0, también tienes lo que trajo la v0.2.0:</p>
 
 <ul>
 <li><strong>Instalar Python 3.12</strong>: un botón en la tarjeta <strong>Python</strong> descarga el Python que usa Calibre3D;
@@ -238,8 +247,8 @@ ya no hace falta el del ordenador.</li>
 <code>requirements.txt</code>. Los botones <strong>Plantilla Linux</strong> y <strong>Plantilla macOS</strong> de la tarjeta
 <strong>Entorno</strong> guardan cada una en la carpeta del proyecto.</li>
 <li><strong>Si en el Mac fallaba la instalación de <code>pyrealsense2</code></strong> («could not find a version that
-satisfies…»): con la v0.2.0 pulsa <strong>Plantilla macOS</strong> y luego <strong>Preparar entorno</strong>. Ya no hay que
-tocar el <code>requirements.txt</code>.</li>
+satisfies…»): pulsa <strong>Plantilla macOS</strong> y luego <strong>Preparar entorno</strong>. Ya no hay que tocar el
+<code>requirements.txt</code>.</li>
 </ul>
 
 <blockquote>
