@@ -49,14 +49,14 @@ No hay que instalar nada. Si al ver la cámara aparece un error de permisos USB,
 
 ## 3. Descargar Script Launcher
 
-La versión actual es la **v1.1.0**. Entra en su página de descargas:
-**[github.com/Itros97/script-launcher/releases/tag/v1.1.0](https://github.com/Itros97/script-launcher/releases/tag/v1.1.0)**
+La versión actual es la **v0.3.0**. Entra en su página de descargas:
+**[github.com/Itros97/script-launcher/releases/tag/v0.3.0](https://github.com/Itros97/script-launcher/releases/tag/v0.3.0)**
 
-¿Ya tenías una versión anterior? Mira [Actualizar a la v1.1.0](#actualizar-a-la-v110) al final.
+¿Ya tenías una versión anterior? Mira [Actualizar a la v0.3.0](#actualizar-a-la-v030) al final.
 
 **macOS**
 
-1. Descarga **[ScriptLauncher-macOS.zip](https://github.com/Itros97/script-launcher/releases/download/v1.1.0/ScriptLauncher-macOS.zip)**.
+1. Descarga **[ScriptLauncher-macOS.zip](https://github.com/Itros97/script-launcher/releases/download/v0.3.0/ScriptLauncher-macOS.zip)**.
    Sirve para todos los Mac (con chip Apple o Intel).
 2. Abre el zip: aparece **Script Launcher**. Arrástralo a la carpeta **Aplicaciones**.
 3. La primera vez, el Mac dirá que no puede comprobar el desarrollador. Es normal: la app no está
@@ -67,7 +67,7 @@ La versión actual es la **v1.1.0**. Entra en su página de descargas:
 
 **Fedora**
 
-1. Descarga **[script-launcher-linux-x86_64.tar.gz](https://github.com/Itros97/script-launcher/releases/download/v1.1.0/script-launcher-linux-x86_64.tar.gz)**.
+1. Descarga **[script-launcher-linux-x86_64.tar.gz](https://github.com/Itros97/script-launcher/releases/download/v0.3.0/script-launcher-linux-x86_64.tar.gz)**.
 2. Abre la carpeta Descargas, haz clic derecho en el archivo y elige **Extraer aquí**.
 3. Abre la **Terminal** y pega:
 
@@ -148,7 +148,7 @@ van a `datos/fotos/`.
 | En un Mac con Intel, «Ver cámara» dice que no está instalado pyrealsense2 | La librería de la cámara no existe para Mac con Intel: ahí la cámara no funciona. La **Demo sin cámara** sí. |
 | La medida da avisos en naranja («Pieza lejos del centro»…) | Lee el aviso: suele bastar con centrar la pieza o repetir el plano. |
 
-## Actualizar a la v1.1.0
+## Actualizar a la v0.3.0
 
 Si ya tenías instalada una versión anterior:
 
@@ -156,7 +156,7 @@ Si ya tenías instalada una versión anterior:
   pregunta, elige **Reemplazar**. Puede que tengas que volver a pulsar **Abrir igualmente**.
 - **Fedora**: descarga y extrae el archivo nuevo (paso 3) y vuelve a ejecutar `install.sh`.
 
-Tus scripts y la carpeta del proyecto se mantienen. Novedades de la v1.1.0:
+Tus scripts y la carpeta del proyecto se mantienen. Novedades de la v0.3.0:
 
 - **Biblioteca de mediciones**: una tarjeta nueva, **Biblioteca**, muestra todas las medidas
   guardadas, de 20 en 20. Se pueden buscar por nombre y filtrar por largo, ancho y espesor (mínimo y
