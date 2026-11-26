@@ -30,7 +30,7 @@ func openLiveCamera(t *testing.T) (testApp, string) {
 	project := readyProject(t)
 	app := openCalibre(t, project)
 	waitForText(t, app.window, "Listo")
-	click(t, app.window, "Ver cámara")
+	clickInCameraCard(t, app, "Ver cámara")
 	waitForText(t, app.window, "▸ Cámara en marcha (1280×720, 15 imágenes por segundo)")
 	waitWhile(t, app, "the first frame", func() bool { return slices.Contains(app.window.Texts(), "Arrancando la cámara…") })
 	return app, project
@@ -53,7 +53,7 @@ func TestLiveCameraShowsInTheActivityPanel(t *testing.T) {
 
 func TestPhotoWhileLiveSavesTheFrameOnScreen(t *testing.T) {
 	app, project := openLiveCamera(t)
-	click(t, app.window, "Guardar imagen")
+	clickInCameraCard(t, app, "Guardar imagen")
 	app.window.Type("encuadre")
 	app.window.PressKey(input.KeyEnter)
 	waitForText(t, app.window, "Imagen guardada: encuadre.png")
@@ -70,4 +70,13 @@ func TestLeavingCalibre3DStopsTheCamera(t *testing.T) {
 	click(t, app.window, "Calibre3D")
 	click(t, app.window, "General")
 	waitWhile(t, app, "the camera to stop", func() bool { return app.preview.Running(project) })
+}
+
+// clickInCameraCard scrolls the cards down to the camera card, which starts below the window's edge, and presses label in it.
+func clickInCameraCard(t *testing.T, app testApp, label string) {
+	t.Helper()
+	if err := app.window.Scroll("Medir", -400); err != nil {
+		t.Fatal(err)
+	}
+	click(t, app.window, label)
 }

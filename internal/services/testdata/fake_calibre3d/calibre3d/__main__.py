@@ -1,4 +1,4 @@
-"""Fake calibre3d command line: plano, centrar, medir <nombre> and demo, writing files shaped like the real ones.
+"""Fake calibre3d command line: plano, centrar, medir <nombre>, patron <nombre> --real L A E and demo, writing files shaped like the real ones.
 
 FAKE_CALIBRE_FAIL=1 makes every command fail as a missing camera would.
 """
@@ -45,6 +45,21 @@ def medir(folder: Path, nombre: str) -> None:
 	print(f"Resultados en {resultados}/{nombre}.*")
 
 
+def patron(folder: Path, nombre: str, real: list) -> None:
+	"""Add the pattern to calibracion.json with a fixed correction, as the real one adds and refits."""
+	ruta = folder / "calibracion.json"
+	cal = json.loads(ruta.read_text()) if ruta.exists() else {"patrones": []}
+	largo, ancho, espesor = (float(size) for size in real)
+	medido = {"largo": largo - 1, "ancho": ancho - 1, "espesor": espesor}
+	cal["patrones"].append({"nombre": nombre, "real": {"largo": largo, "ancho": ancho, "espesor": espesor}, "medido": medido, "fecha": now()})
+	cal["correccion"] = {"k_xy": 1.0, "off_xy": 1.0, "k_z": 1.0, "off_z": 0.0}
+	folder.mkdir(parents=True, exist_ok=True)
+	ruta.write_text(json.dumps(cal, ensure_ascii=False))
+	png(folder / "resultados" / f"patron_{nombre}_vista.png")
+	print(f"Patrón '{nombre}': medido L={largo - 1:.3f} A={ancho - 1:.3f} E={espesor:.3f}")
+	print(f"Corrección actual: L,A = 1.00000·x +1.000   E = 1.00000·x +0.000  ({len(cal['patrones'])} patrones)")
+
+
 def main(argv) -> int:
 	if os.environ.get("FAKE_CALIBRE_FAIL") == "1":
 		print("RuntimeError: No device connected", file=sys.stderr)
@@ -57,6 +72,11 @@ def main(argv) -> int:
 		print("Centrado (dentro de 2.0 mm). Fija la plantilla.")
 	elif command == "medir":
 		medir(Path("datos"), argv[1])
+	elif command == "patron":
+		if argv[2:3] != ["--real"] or len(argv) != 6:
+			print("uso: patron <nombre> --real LARGO ANCHO ESPESOR", file=sys.stderr)
+			return 2
+		patron(Path("datos"), argv[1], argv[3:6])
 	elif command == "demo":
 		plano(Path("demo"))
 		medir(Path("demo"), "demo_canto")

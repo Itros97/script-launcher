@@ -35,19 +35,33 @@ func (service *CalibreService) Validate(project, name string) error {
 }
 
 // Run starts a step in the project, closing the live view first; it tells whether a view was closed.
+// A pattern needs its real sizes, so it is started with RunPattern instead.
 func (service *CalibreService) Run(project string, step domain.CalibreStep, name string) (*Run, bool, error) {
+	if step == domain.StepPattern {
+		return nil, false, fmt.Errorf("a pattern needs its real sizes: start it with RunPattern")
+	}
 	if step == domain.StepMeasure {
 		if err := service.Validate(project, name); err != nil {
 			return nil, false, err
 		}
 	}
+	return service.start(project, step.Title(name), step.Args(name))
+}
+
+// RunPattern measures a piece of known size and adds it to the project's calibration, closing the live view first.
+func (service *CalibreService) RunPattern(project string, pattern domain.Pattern) (*Run, bool, error) {
+	return service.start(project, domain.StepPattern.Title(pattern.Name), pattern.Args())
+}
+
+// start closes the live view, since calibre3d needs the camera alone, and runs calibre3d with these arguments.
+func (service *CalibreService) start(project, title string, args []string) (*Run, bool, error) {
 	closed, err := service.preview.StopAndWait(cameraReleaseTimeout)
 	if err != nil {
 		return nil, closed, err
 	}
 	command := Command{
-		Name: step.Title(name), Runner: domain.CalibreModule,
-		Program: filepath.Join(project, domain.VenvPython), Args: step.Args(name), Dir: project,
+		Name: title, Runner: domain.CalibreModule,
+		Program: filepath.Join(project, domain.VenvPython), Args: args, Dir: project,
 	}
 	run, err := service.runs.StartCommand(calibreRunID(project), command)
 	return run, closed, err
@@ -78,6 +92,19 @@ func (service *CalibreService) LoadPlane(project string) (plane domain.PlaneInfo
 	}
 	plane, err = domain.ParsePlane(content)
 	return plane, err == nil, err
+}
+
+// LoadCalibration reads the project's calibration; ok is false while no pattern was measured.
+func (service *CalibreService) LoadCalibration(project string) (calibration domain.Calibration, ok bool, err error) {
+	content, err := os.ReadFile(domain.CalibrationFile(project))
+	if os.IsNotExist(err) {
+		return domain.Calibration{}, false, nil
+	}
+	if err != nil {
+		return domain.Calibration{}, false, err
+	}
+	calibration, err = domain.ParseCalibration(content)
+	return calibration, err == nil, err
 }
 
 func calibreRunID(project string) string { return "calibre:" + filepath.Clean(project) }

@@ -27,22 +27,24 @@ type Calibre3D struct {
 	project       string
 	exportFolder  string // where the library's last CSV went, to start the picker there
 	status        domain.EnvStatus
-	reason        string        // why the environment is not ready, when the check could tell
-	reqs          string        // the requirements file setup installs, "" when the project has none
-	stale         bool          // the status has not been checked since the profile was built
-	checked       *services.Run // the setup run whose end was already checked
-	pythonReady   bool          // the Python environments are made with is installed
-	pythonChecked *services.Run // the Python installation whose end was already checked
-	choosing      bool          // the folder picker is shown
-	naming        nameKind      // what the name dialog asks for, if shown
-	opening       bool          // the name dialog opens on this frame
-	name          string        // the name being typed
-	capture       photoCapture  // the last photo started
-	step          stepRun       // the last calibre3d step started
-	plane         planeState    // the project's reference plane
-	result        *measured     // the last measurement shown
-	activity      activity      // what the right panel shows
-	library       library       // the saved measurements, shown on the right instead of the activity
+	reason        string           // why the environment is not ready, when the check could tell
+	reqs          string           // the requirements file setup installs, "" when the project has none
+	stale         bool             // the status has not been checked since the profile was built
+	checked       *services.Run    // the setup run whose end was already checked
+	pythonReady   bool             // the Python environments are made with is installed
+	pythonChecked *services.Run    // the Python installation whose end was already checked
+	choosing      bool             // the folder picker is shown
+	naming        nameKind         // what the name dialog asks for, if shown
+	opening       bool             // the name dialog opens on this frame
+	name          string           // the name being typed
+	capture       photoCapture     // the last photo started
+	step          stepRun          // the last calibre3d step started
+	plane         planeState       // the project's reference plane
+	calibration   calibrationState // the patterns measured and the correction they give
+	pattern       patternForm      // the pattern dialog
+	result        *measured        // the last measurement shown
+	activity      activity         // what the right panel shows
+	library       library          // the saved measurements, shown on the right instead of the activity
 	view          components.CameraView
 	images        components.ImageFiles
 }
@@ -104,6 +106,7 @@ func (profile *Calibre3D) Draw(context *ui.Context, current *session.Session) {
 	})
 	profile.drawFolderPicker(context, current)
 	profile.drawNameDialog(context, current)
+	profile.drawPatternDialog(context, current)
 	profile.drawDeleteDialog(context, current)
 	profile.drawExportPicker(context, current)
 }

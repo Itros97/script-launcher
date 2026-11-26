@@ -29,6 +29,8 @@ func Describe(err error) string {
 		return fmt.Sprintf("Usa solo letras, números, - y _, sin espacios y hasta %d caracteres.", domain.MaxAliasLength)
 	case errors.Is(err, domain.ErrAliasTaken):
 		return "Ya existe uno con ese nombre: elige otro."
+	case errors.Is(err, domain.ErrInvalidSize):
+		return "Escribe cada medida real en mm, mayor que 0 (con coma o punto)."
 	case errors.Is(err, services.ErrTemplateExists):
 		return "Esa plantilla ya está en la carpeta del proyecto: borra el archivo si quieres guardarla otra vez."
 	case errors.Is(err, fs.ErrNotExist):

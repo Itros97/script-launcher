@@ -111,7 +111,8 @@ do before pressing it:
 |---|---|---|
 | **1. Plano** | `python -m calibre3d plano` | Leave the mat empty. Once done, it says when and how noisy ("Hecho el 1 nov, 22:10 · ruido 0,04 mm"), from `datos/plano.json`. |
 | **2. Centrar** | `python -m calibre3d centrar` | Put a coin on the cross. Its output says how far to move the mat; `centrado_vista.png` shows under it. |
-| **3. Medir** | `python -m calibre3d medir <name>` | Put the piece inside the circle. It asks for the piece's name (letters, digits, `-`, `_`); a name already measured is refused, so no result is overwritten. Without a plane it says "Haz primero el plano", but lets you go on, as calibre3d does. |
+| **3. Patrón** | `python -m calibre3d patron <name> --real L A E` | Put a piece of known size inside the circle. It asks for the pattern's name and its real length, width and thickness in mm (decimal point or comma). Beside the button: "Sin calibrar", or how many patterns there are and the correction they give ("2 patrones · L,A ×1,0012 +0,95 mm · E ×1,0000 +0,02 mm"), from `datos/calibracion.json`. `patron_<name>_vista.png` shows under its output. |
+| **4. Medir** | `python -m calibre3d medir <name>` | Put the piece inside the circle. It asks for the piece's name (letters, digits, `-`, `_`); a name already measured is refused, so no result is overwritten. Without a plane it says "Haz primero el plano", but lets you go on, as calibre3d does. |
 | **Demo sin cámara** | `python -m calibre3d demo` | Nothing: it measures a simulated piece, to try everything without the camera. |
 
 While a step runs, its output shows live in **Actividad** and the other steps, the photo and the
@@ -126,8 +127,23 @@ output come the heat map (`_mapa.png`) and the view (`_vista.png`).
 
 If a step fails, its error shows in red under **Actividad** and the last result stays as it was.
 
-`patron` (calibrating with pieces of known size) and `plantilla` (the mat's PDF) are not buttons
-yet: run them from a terminal in the project folder.
+`plantilla` (the mat's PDF) is not a button yet: run it from a terminal in the project folder.
+
+### Calibrating with patterns
+
+Without a calibration, calibre3d shows what it measured as it is, and with a real camera the length
+and width tend to come out slightly short (the bottom of a rounded edge is below the 0.3 mm
+threshold and the camera smooths the edges). **3. Patrón** corrects that: calibre3d measures a piece
+whose real sizes you typed, adds it to `datos/calibracion.json` and fits `real = k·measured + b`
+again; every later **Medir** applies it on its own (the demo never does).
+
+- The correction is only as good as the real sizes: measure the patterns with a caliper, to a
+  hundredth if you can.
+- Use two or more patterns whose sizes differ by at least 5 mm, so the scale is fitted and not only
+  the offset; a pattern measured again with the same name adds one more sample.
+- Prefer patterns shaped like the pieces (a rounded edge if they are rounded), centred like them.
+- The launcher cannot remove patterns: to start the calibration over, delete
+  `datos/calibracion.json`.
 
 ## The library
 

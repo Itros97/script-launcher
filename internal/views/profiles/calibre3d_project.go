@@ -50,6 +50,6 @@ func (profile *Calibre3D) choose(current *session.Session, folder string) {
 		return
 	}
 	profile.project = folder
-	profile.library = library{}
+	profile.library, profile.plane, profile.calibration = library{}, planeState{}, calibrationState{}
 	profile.check(current)
 }
