@@ -56,7 +56,7 @@ func (profile *Calibre3D) reservedHeight() float32 {
 // stepPictures are the pictures a finished step left, to show under its output.
 func stepPictures(project string, step stepRun) []string {
 	switch step.step {
-	case domain.StepCenter:
+	case domain.StepCenter, domain.StepPattern:
 		return []string{step.step.ResultFile(project, step.name, "_vista")}
 	case domain.StepMeasure, domain.StepDemo:
 		return []string{step.step.ResultFile(project, step.name, "_mapa"), step.step.ResultFile(project, step.name, "_vista")}

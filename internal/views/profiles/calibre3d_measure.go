@@ -36,6 +36,7 @@ func (profile *Calibre3D) drawMeasureCard(context *ui.Context, current *session.
 			return
 		}
 		profile.loadPlane(current)
+		profile.loadCalibration(current)
 		hint := context.Theme.InkSoft
 		if profile.drawStep(context, "scan", "1. Plano", planeHint(profile.plane), hint) {
 			profile.runStep(current, domain.StepPlane, "")
@@ -43,11 +44,14 @@ func (profile *Calibre3D) drawMeasureCard(context *ui.Context, current *session.
 		if profile.drawStep(context, "crosshair", "2. Centrar", "Pon una moneda en la cruz.", hint) {
 			profile.runStep(current, domain.StepCenter, "")
 		}
-		measureHint, measureColour := "Pon la pieza dentro del círculo.", hint
+		patternHint, measureHint, measureColour := calibrationHint(profile.calibration), "Pon la pieza dentro del círculo.", hint
 		if !profile.plane.saved {
-			measureHint, measureColour = "Haz primero el plano.", context.Theme.Warning
+			patternHint, measureHint, measureColour = "Haz primero el plano.", "Haz primero el plano.", context.Theme.Warning
 		}
-		if profile.drawStep(context, "ruler", "3. Medir", measureHint, measureColour) {
+		if profile.drawStep(context, "scale", "3. Patrón", patternHint, measureColour) {
+			profile.askPattern()
+		}
+		if profile.drawStep(context, "ruler", "4. Medir", measureHint, measureColour) {
 			profile.askName(measureName)
 		}
 		if context.FlatIconButton("flask-conical", "Demo sin cámara") {
@@ -86,7 +90,14 @@ func (profile *Calibre3D) measure(current *session.Session, name string) {
 
 // runStep starts a calibre3d step and follows it on the right; the live camera is closed first.
 func (profile *Calibre3D) runStep(current *session.Session, step domain.CalibreStep, name string) {
-	run, closed, err := profile.Calibre.Run(profile.project, step, name)
+	profile.startStep(current, step, name, func() (*services.Run, bool, error) {
+		return profile.Calibre.Run(profile.project, step, name)
+	})
+}
+
+// startStep starts a step with start, which closes the live camera first, and follows it on the right.
+func (profile *Calibre3D) startStep(current *session.Session, step domain.CalibreStep, name string, start func() (*services.Run, bool, error)) {
+	run, closed, err := start()
 	if closed {
 		current.Notify("He parado la vista de la cámara para medir.", false)
 	}
@@ -103,7 +114,7 @@ func (profile *Calibre3D) stepRunning() bool {
 	return profile.step.run != nil && profile.step.run.Running()
 }
 
-// finishStep handles a step's end once: reloads the plane, or reads and shows the measurement.
+// finishStep handles a step's end once: reloads the plane and the calibration, and reads and shows a measurement.
 func (profile *Calibre3D) finishStep(current *session.Session) {
 	step := &profile.step
 	if step.run == nil || step.handled || step.run.Running() {
@@ -114,7 +125,11 @@ func (profile *Calibre3D) finishStep(current *session.Session) {
 		current.Notify("No se pudo completar «"+step.step.Title(step.name)+"»: mira el detalle a la derecha.", true)
 		return
 	}
-	profile.plane.loaded = false
+	profile.plane.loaded, profile.calibration.loaded = false, false
+	if step.step == domain.StepPattern {
+		current.Notify("Patrón «"+step.name+"» guardado: las próximas medidas usarán la corrección.", false)
+		return
+	}
 	if step.step != domain.StepMeasure && step.step != domain.StepDemo {
 		return
 	}

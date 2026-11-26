@@ -124,7 +124,11 @@ Calienta la cámara unos 10 minutos antes de empezar: la medida cambia un poco c
 1. **1. Plano**: deja el tapete vacío y pulsa el botón. Se hace una vez al empezar la sesión.
 2. **2. Centrar**: pon una moneda sobre la cruz del tapete y pulsa. A la derecha dice cuánto mover
    el tapete; muévelo y repite hasta que diga «Centrado».
-3. **3. Medir**: pon la pieza dentro del círculo, pulsa, escribe un nombre (por ejemplo
+3. **3. Patrón** (la primera vez, y cuando cambies la cámara de sitio): pon una pieza de tamaño
+   conocido dentro del círculo, pulsa, escribe un nombre y su largo, ancho y espesor reales en mm
+   (medidos con el calibre de mano, con todos los decimales que puedas) y pulsa **Medir patrón**.
+   Repítelo con otra pieza de tamaño distinto. Desde ese momento las medidas salen corregidas.
+4. **4. Medir**: pon la pieza dentro del círculo, pulsa, escribe un nombre (por ejemplo
    `muestra_001`, sin espacios) y pulsa **Guardar**. Arriba aparecen el largo, el ancho, el espesor
    y el Feret; debajo, el mapa de calor.
 

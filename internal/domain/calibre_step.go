@@ -13,6 +13,7 @@ const (
 	StepCenter                     // say how far a coin on the cross is from the camera's axis
 	StepMeasure                    // measure a named piece
 	StepDemo                       // a full measurement of a simulated piece, without the camera
+	StepPattern                    // measure a piece of known size and update the calibration
 )
 
 // calibre3d's folders and names, relative to the project.
@@ -22,9 +23,11 @@ const (
 	resultsDir     = "resultados"
 	demoResult     = "demo_canto"
 	centerResult   = "centrado"
+	patternPrefix  = "patron_"
 )
 
-// Args are the arguments that run the step with `python`; name is used by StepMeasure only.
+// Args are the arguments that run the step with `python`; name is used by StepMeasure and StepPattern
+// only, and StepPattern also needs the real sizes that Pattern.Args adds.
 func (step CalibreStep) Args(name string) []string {
 	switch step {
 	case StepPlane:
@@ -33,6 +36,8 @@ func (step CalibreStep) Args(name string) []string {
 		return []string{"-m", CalibreModule, "centrar"}
 	case StepMeasure:
 		return []string{"-m", CalibreModule, "medir", name}
+	case StepPattern:
+		return []string{"-m", CalibreModule, "patron", name}
 	default:
 		return []string{"-m", CalibreModule, "demo"}
 	}
@@ -47,6 +52,8 @@ func (step CalibreStep) Title(name string) string {
 		return "Centrado"
 	case StepMeasure:
 		return "Medida «" + name + "»"
+	case StepPattern:
+		return "Patrón «" + name + "»"
 	default:
 		return "Demo"
 	}
@@ -59,6 +66,8 @@ func (step CalibreStep) ResultName(name string) string {
 		return centerResult
 	case StepDemo:
 		return demoResult
+	case StepPattern:
+		return patternPrefix + name
 	default:
 		return name
 	}

@@ -57,7 +57,7 @@ func TestThePlaneStepSaysWhenItWasDone(t *testing.T) {
 func TestMeasuringAPieceShowsItsSizesAndPictures(t *testing.T) {
 	project := measuringProject(t)
 	app := openMeasuring(t, project)
-	click(t, app.window, "3. Medir")
+	click(t, app.window, "4. Medir")
 	app.window.Type("pieza1")
 	app.window.PressKey(input.KeyEnter)
 	waitForText(t, app.window, "61,23 mm")
@@ -77,7 +77,7 @@ func TestMeasuringAPieceShowsItsSizesAndPictures(t *testing.T) {
 func TestAStepClosesTheLiveCameraFirst(t *testing.T) {
 	project := measuringProject(t)
 	app := openMeasuring(t, project)
-	click(t, app.window, "Ver cámara")
+	clickInCameraCard(t, app, "Ver cámara")
 	waitWhile(t, app, "the camera", func() bool { return !app.preview.Running(project) })
 	click(t, app.window, "2. Centrar")
 	waitForText(t, app.window, "He parado la vista de la cámara para medir.")
@@ -89,7 +89,7 @@ func TestAStepClosesTheLiveCameraFirst(t *testing.T) {
 
 func TestAFailedStepKeepsTheLastResult(t *testing.T) {
 	app := openMeasuring(t, measuringProject(t))
-	click(t, app.window, "3. Medir")
+	click(t, app.window, "4. Medir")
 	app.window.Type("buena")
 	app.window.PressKey(input.KeyEnter)
 	waitForText(t, app.window, "61,23 mm")

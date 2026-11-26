@@ -1,0 +1,22 @@
+{
+  "patrones": [
+    {
+      "nombre": "bloque_60",
+      "real": {"largo": 60.0, "ancho": 40.0, "espesor": 20.0},
+      "medido": {"largo": 59.012, "ancho": 39.05, "espesor": 19.99},
+      "fecha": "2026-11-20T10:15:02"
+    },
+    {
+      "nombre": "bloque_25",
+      "real": {"largo": 25.0, "ancho": 25.0, "espesor": 25.0},
+      "medido": {"largo": 24.03, "ancho": 24.01, "espesor": 24.98},
+      "fecha": "2026-11-20T10:18:40"
+    }
+  ],
+  "correccion": {
+    "k_xy": 1.0012,
+    "off_xy": 0.95,
+    "k_z": 1.0,
+    "off_z": 0.015
+  }
+}

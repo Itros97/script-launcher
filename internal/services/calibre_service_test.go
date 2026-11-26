@@ -139,3 +139,47 @@ func TestTheRealCalibre3DDemo(t *testing.T) {
 		t.Errorf("got %+v, %v", measurement, err)
 	}
 }
+
+func TestAPatternUpdatesTheCalibration(t *testing.T) {
+	project := fakeCalibreProject(t)
+	service := newCalibreService(t)
+	if _, ok, err := service.LoadCalibration(project); ok || err != nil {
+		t.Fatalf("before any pattern: got ok=%v, %v", ok, err)
+	}
+	for _, name := range []string{"bloque_60", "bloque_60"} {
+		run, _, err := service.RunPattern(project, domain.Pattern{Name: name, Length: 60, Width: 40.05, Thickness: 20})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if snapshot := waitFor(t, run); snapshot.Status != Succeeded {
+			t.Fatalf("the pattern failed: %+v", snapshot.Lines)
+		}
+	}
+	calibration, ok, err := service.LoadCalibration(project)
+	if !ok || err != nil || calibration.Patterns != 2 || calibration.Correction.OffsetXY != 1 {
+		t.Errorf("got %+v, %v, %v", calibration, ok, err)
+	}
+	if _, err := os.Stat(domain.StepPattern.ResultFile(project, "bloque_60", "_vista")); err != nil {
+		t.Errorf("no view: %v", err)
+	}
+}
+
+func TestAPatternCannotStartWithoutItsSizes(t *testing.T) {
+	if _, _, err := newCalibreService(t).Run(fakeCalibreProject(t), domain.StepPattern, "bloque"); err == nil {
+		t.Error("a pattern started without its real sizes")
+	}
+}
+
+func TestABrokenCalibrationIsReported(t *testing.T) {
+	project := t.TempDir()
+	path := domain.CalibrationFile(project)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte("{"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok, err := newCalibreService(t).LoadCalibration(project); ok || err == nil {
+		t.Errorf("got ok=%v, %v", ok, err)
+	}
+}

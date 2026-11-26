@@ -51,7 +51,7 @@ func TestSavingAPhotoAsksForItsNameAndSavesIt(t *testing.T) {
 	project := readyProject(t)
 	app := openCalibre(t, project)
 	waitForText(t, app.window, "Listo")
-	click(t, app.window, "Guardar imagen")
+	clickInCameraCard(t, app, "Guardar imagen")
 	app.window.Type("pieza1")
 	app.window.PressKey(input.KeyEnter)
 	waitForText(t, app.window, "Imagen guardada: pieza1.png")
@@ -68,7 +68,7 @@ func TestAnInvalidPhotoNameIsExplainedAndNotSaved(t *testing.T) {
 	project := readyProject(t)
 	app := openCalibre(t, project)
 	waitForText(t, app.window, "Listo")
-	click(t, app.window, "Guardar imagen")
+	clickInCameraCard(t, app, "Guardar imagen")
 	app.window.Type("con espacio")
 	app.window.PressKey(input.KeyEnter)
 	app.window.Frame()
@@ -83,7 +83,7 @@ func TestAnInvalidPhotoNameIsExplainedAndNotSaved(t *testing.T) {
 func TestCancelClosesTheNameDialog(t *testing.T) {
 	app := openCalibre(t, readyProject(t))
 	waitForText(t, app.window, "Listo")
-	click(t, app.window, "Guardar imagen")
+	clickInCameraCard(t, app, "Guardar imagen")
 	click(t, app.window, "Cancelar")
 	if slices.Contains(app.window.Texts(), "Cancelar") {
 		t.Errorf("dialog still shown: %q", app.window.Texts())
