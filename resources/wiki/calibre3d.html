@@ -221,7 +221,13 @@ do before pressing it:</p>
 </tr>
 
 <tr>
-<td><strong>3. Medir</strong></td>
+<td><strong>3. Patrón</strong></td>
+<td><code>python -m calibre3d patron &lt;name&gt; --real L A E</code></td>
+<td>Put a piece of known size inside the circle. It asks for the pattern&rsquo;s name and its real length, width and thickness in mm (decimal point or comma). Beside the button: &ldquo;Sin calibrar&rdquo;, or how many patterns there are and the correction they give (&ldquo;2 patrones · L,A ×1,0012 +0,95 mm · E ×1,0000 +0,02 mm&rdquo;), from <code>datos/calibracion.json</code>. <code>patron_&lt;name&gt;_vista.png</code> shows under its output.</td>
+</tr>
+
+<tr>
+<td><strong>4. Medir</strong></td>
 <td><code>python -m calibre3d medir &lt;name&gt;</code></td>
 <td>Put the piece inside the circle. It asks for the piece&rsquo;s name (letters, digits, <code>-</code>, <code>_</code>); a name already measured is refused, so no result is overwritten. Without a plane it says &ldquo;Haz primero el plano&rdquo;, but lets you go on, as calibre3d does.</td>
 </tr>
@@ -245,8 +251,25 @@ output come the heat map (<code>_mapa.png</code>) and the view (<code>_vista.png
 
 <p>If a step fails, its error shows in red under <strong>Actividad</strong> and the last result stays as it was.</p>
 
-<p><code>patron</code> (calibrating with pieces of known size) and <code>plantilla</code> (the mat&rsquo;s PDF) are not buttons
-yet: run them from a terminal in the project folder.</p>
+<p><code>plantilla</code> (the mat&rsquo;s PDF) is not a button yet: run it from a terminal in the project folder.</p>
+
+<h3 id="calibrating-with-patterns">Calibrating with patterns</h3>
+
+<p>Without a calibration, calibre3d shows what it measured as it is, and with a real camera the length
+and width tend to come out slightly short (the bottom of a rounded edge is below the 0.3 mm
+threshold and the camera smooths the edges). <strong>3. Patrón</strong> corrects that: calibre3d measures a piece
+whose real sizes you typed, adds it to <code>datos/calibracion.json</code> and fits <code>real = k·measured + b</code>
+again; every later <strong>Medir</strong> applies it on its own (the demo never does).</p>
+
+<ul>
+<li>The correction is only as good as the real sizes: measure the patterns with a caliper, to a
+hundredth if you can.</li>
+<li>Use two or more patterns whose sizes differ by at least 5 mm, so the scale is fitted and not only
+the offset; a pattern measured again with the same name adds one more sample.</li>
+<li>Prefer patterns shaped like the pieces (a rounded edge if they are rounded), centred like them.</li>
+<li>The launcher cannot remove patterns: to start the calibration over, delete
+<code>datos/calibracion.json</code>.</li>
+</ul>
 
 <h2 id="the-library">The library</h2>
 
