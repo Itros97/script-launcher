@@ -49,15 +49,15 @@ sudo udevadm trigger
 
 <h2 id="3-descargar-script-launcher">3. Descargar Script Launcher</h2>
 
-<p>La versión actual es la <strong>v0.3.0</strong>. Entra en su página de descargas:
-<strong><a href="https://github.com/Itros97/script-launcher/releases/tag/v0.3.0" target="_blank">github.com/Itros97/script-launcher/releases/tag/v0.3.0</a></strong></p>
+<p>La versión actual es la <strong>v0.4.0</strong>. Entra en su página de descargas:
+<strong><a href="https://github.com/Itros97/script-launcher/releases/tag/v0.4.0" target="_blank">github.com/Itros97/script-launcher/releases/tag/v0.4.0</a></strong></p>
 
-<p>¿Ya tenías una versión anterior? Mira <a href="#actualizar-a-la-v030">Actualizar a la v0.3.0</a> al final.</p>
+<p>¿Ya tenías una versión anterior? Mira <a href="#actualizar-a-la-v040">Actualizar a la v0.4.0</a> al final.</p>
 
 <p><strong>macOS</strong></p>
 
 <ol>
-<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.3.0/ScriptLauncher-macOS.zip" target="_blank">ScriptLauncher-macOS.zip</a></strong>.
+<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.4.0/ScriptLauncher-macOS.zip" target="_blank">ScriptLauncher-macOS.zip</a></strong>.
 Sirve para todos los Mac (con chip Apple o Intel).</li>
 <li>Abre el zip: aparece <strong>Script Launcher</strong>. Arrástralo a la carpeta <strong>Aplicaciones</strong>.</li>
 <li>La primera vez, el Mac dirá que no puede comprobar el desarrollador. Es normal: la app no está
@@ -73,7 +73,7 @@ firmada con una cuenta de pago de Apple. Para abrirla:
 <p><strong>Fedora</strong></p>
 
 <ol>
-<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.3.0/script-launcher-linux-x86_64.tar.gz" target="_blank">script-launcher-linux-x86_64.tar.gz</a></strong>.</li>
+<li>Descarga <strong><a href="https://github.com/Itros97/script-launcher/releases/download/v0.4.0/script-launcher-linux-x86_64.tar.gz" target="_blank">script-launcher-linux-x86_64.tar.gz</a></strong>.</li>
 <li>Abre la carpeta Descargas, haz clic derecho en el archivo y elige <strong>Extraer aquí</strong>.</li>
 <li>Abre la <strong>Terminal</strong> y pega:</li>
 </ol>
@@ -222,7 +222,7 @@ van a <code>datos/fotos/</code>.</p>
 </tbody>
 </table>
 
-<h2 id="actualizar-a-la-v0-3-0">Actualizar a la v0.3.0</h2>
+<h2 id="actualizar-a-la-v0-4-0">Actualizar a la v0.4.0</h2>
 
 <p>Si ya tenías instalada una versión anterior:</p>
 
@@ -232,7 +232,19 @@ pregunta, elige <strong>Reemplazar</strong>. Puede que tengas que volver a pulsa
 <li><strong>Fedora</strong>: descarga y extrae el archivo nuevo (paso 3) y vuelve a ejecutar <code>install.sh</code>.</li>
 </ul>
 
-<p>Tus scripts y la carpeta del proyecto se mantienen. Novedades de la v0.3.0:</p>
+<p>Tus scripts y la carpeta del proyecto se mantienen. Novedades de la v0.4.0:</p>
+
+<ul>
+<li><strong>Calibrar con patrones</strong>: un paso nuevo, <strong>3. Patrón</strong>, en la tarjeta <strong>Medir</strong> (medir pasa a
+ser el <strong>4. Medir</strong>). Mides una pieza de tamaño conocido, escribes su largo, ancho y espesor
+reales, y a partir de entonces las medidas salen corregidas. Corrige el error que se repite
+siempre igual, como que el largo y el ancho salgan alrededor de 1 mm cortos. Mira el paso 3 de
+<a href="#7-medir-una-pieza">Medir una pieza</a>.</li>
+<li><strong>Al cambiar de carpeta de proyecto</strong> ya no se queda el plano del proyecto anterior en la tarjeta
+<strong>Medir</strong>.</li>
+</ul>
+
+<p>Si vienes de la v0.2.0 o antes, también tienes lo que trajo la v0.3.0:</p>
 
 <ul>
 <li><strong>Biblioteca de mediciones</strong>: una tarjeta nueva, <strong>Biblioteca</strong>, muestra todas las medidas
@@ -241,7 +253,7 @@ máximo), borrar, y exportar a CSV una a una, las marcadas, la página o todas. 
 en Excel o LibreOffice en español.</li>
 </ul>
 
-<p>Si vienes de la v0.1.0, también tienes lo que trajo la v0.2.0:</p>
+<p>Y si vienes de la v0.1.0, lo que trajo la v0.2.0:</p>
 
 <ul>
 <li><strong>Instalar Python 3.12</strong>: un botón en la tarjeta <strong>Python</strong> descarga el Python que usa Calibre3D;
